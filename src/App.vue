@@ -1,9 +1,9 @@
 <script setup>
-import main_page from './pages/main-page/main-page.vue'
+import UploadAsset from './pages/upload-asset/upload-asset.vue';
 </script>
 
 <template>
     <div id="app">
-        <main_page />
+        <UploadAsset />
     </div>
 </template>
