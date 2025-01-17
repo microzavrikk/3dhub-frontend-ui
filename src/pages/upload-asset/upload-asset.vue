@@ -1,7 +1,7 @@
 <template>
   <div class="upload-container">
     <h2>Upload a new model</h2>
-    
+
     <div
       class="drop-zone"
       @dragover.prevent="handleDragOver"
@@ -17,7 +17,7 @@
         class="file-input"
         :accept="acceptedFileTypes"
       >
-      
+
       <div class="drop-zone__content">
         <div v-if="selectedFile">
           <div class="selected-file">
@@ -33,36 +33,43 @@
 
     <div class="actions">
       <button class="cancel-btn" @click="handleCancel">Cancel</button>
+      <button
+        v-if="selectedFile"
+        class="upload-btn"
+        @click="handleUpload"
+      >Upload</button>
     </div>
   </div>
 </template>
 
 <script>
 import { useModelStore } from '../../stores/modelStore';
+import { useRouter } from 'vue-router';
 
 export default {
   name: 'FileUploader',
 
   setup() {
     const modelStore = useModelStore();
-    return { modelStore };
+    const router = useRouter();
+    return { modelStore, router };
   },
-  
+
   data() {
     return {
       isDragging: false,
       selectedFile: null,
       acceptedFileTypes: '*/*'
-    }
+    };
   },
 
   methods: {
     handleDragOver(e) {
-      this.isDragging = true
+      this.isDragging = true;
     },
 
     handleDragLeave(e) {
-      this.isDragging = false
+      this.isDragging = false;
     },
 
     handleDrop(e) {
@@ -87,7 +94,7 @@ export default {
     },
 
     triggerFileInput() {
-      this.$refs.fileInput.click()
+      this.$refs.fileInput.click();
     },
 
     removeFile() {
@@ -102,17 +109,16 @@ export default {
       this.$emit('cancel');
     },
 
+    handleUpload() {
+      this.router.push('/upload-info-asset');
+    },
+
     getSelectedFile() {
       return this.selectedFile;
     }
-  },
-
-  beforeUnmount() {
-    if (this.selectedFile) {
-      this.modelStore.clearModel();
-    }
   }
-}
+  // Убран хук beforeUnmount для сохранения данных в store
+};
 </script>
 
 <style scoped>
@@ -171,6 +177,7 @@ export default {
   display: flex;
   justify-content: center;
   margin-top: 20px;
+  gap: 10px;
 }
 
 .cancel-btn {
@@ -186,6 +193,21 @@ export default {
 
 .cancel-btn:hover {
   background-color: #d32f2f;
+}
+
+.upload-btn {
+  padding: 8px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.upload-btn:hover {
+  background-color: #388e3c;
 }
 
 h2 {
