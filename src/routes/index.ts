@@ -8,12 +8,24 @@ import primeVueTest from '../prime-vue-test.vue'
 import UserAuthService from '../service/auth/user.auth.service'
 import signup from '../components/signup-window/signup.vue'
 import login from '../components/login-window/login.vue'
+import EmailVerificationModal from '../components/email-verification-modal/email-verification-modal.vue'
+import MainPage from '../pages/main-page/main-page.vue'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: App
+  },
+  {
+    path: '/main-page',
+    name: 'MainPage',
+    component: MainPage
+  },
+  {
+    path: '/email-verification',
+    name: 'EmailVerification',
+    component: EmailVerificationModal
   },
   {
     path: '/signup',

@@ -95,12 +95,21 @@
       </div>
     </div>
   </div>
+
+  <EmailVerificationModal
+    v-if="showVerificationModal"
+    :user-email="registerForm.email"
+    @close="handleVerificationClose"
+    @resend="handleResendVerification"
+    @change-email="handleChangeEmail"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref, defineEmits } from 'vue';
 import { useRegisterMutation } from '../../types';
 import { RegisterForm } from '../common.types'
+import EmailVerificationModal from '../email-verification-modal/email-verification-modal.vue';
 
 const registerForm = ref<RegisterForm>({
   username: '',
@@ -121,20 +130,49 @@ const emit = defineEmits(['close']);
 
 const { mutate: register, onError } = useRegisterMutation();
 
+const showVerificationModal = ref(false);
+
 const handleRegister = async () => {
   if(!isFormValid()) {
     console.error('Form is not valid');
     return;
   }
-  const response = await register({
-    data: {
-      username: registerForm.value.username,
-      email: registerForm.value.email,
-      password: registerForm.value.password
+  
+  try {
+    const response = await register({
+      data: {
+        username: registerForm.value.username,
+        email: registerForm.value.email,
+        password: registerForm.value.password
+      }
+    });
+    
+    if (response) {
+      showVerificationModal.value = true;
     }
-  })
-  resetForm();
+  } catch (error: any) {
+    console.error('Registration failed:', error);
+    console.error('GraphQL Errors:', error.graphQLErrors);
+    console.error('Network Error:', error.networkError);
+  }
 }
+
+const handleVerificationClose = () => {
+  showVerificationModal.value = false;
+  closeModal();
+};
+
+const handleResendVerification = async () => {
+  try {
+    console.log('Verification email resent');
+  } catch (error) {
+    console.error('Failed to resend verification email:', error);
+  }
+};
+
+const handleChangeEmail = () => {
+  showVerificationModal.value = false;
+};
 
 const resetForm = () => {
   registerForm.value.username = ''

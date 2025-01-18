@@ -11,7 +11,9 @@
       </div>
     </div>
     <div class="dark-area">
-      <div class="square-bump"></div>
+      <div class="square-bump">
+        <canvas ref="canvas" class="model-canvas"></canvas>
+      </div>
     </div>
     <div class="buttons-container">
       <button class="login-btn" @click="showLogin">Log In</button>
@@ -29,14 +31,55 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import Login from '../../components/login-window/login.vue';
 import SignUp from '../../components/signup-window/signup.vue';
+import * as THREE from 'three';
 
 export default {
   name: 'MainPage',
   setup() {
     const currentComponent = ref(null);
+    const canvas = ref(null);
+
+    onMounted(() => {
+      // Three.js setup
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, 150 / 150, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ 
+        canvas: canvas.value,
+        alpha: true
+      });
+      renderer.setSize(150, 150);
+
+      // Create a torus knot
+      const geometry = new THREE.TorusKnotGeometry(30, 8, 100, 16);
+      const material = new THREE.MeshPhongMaterial({ 
+        color: 0x00ff00,
+        shininess: 100
+      });
+      const torusKnot = new THREE.Mesh(geometry, material);
+      scene.add(torusKnot);
+
+      // Add lights
+      const light1 = new THREE.DirectionalLight(0xffffff, 1);
+      light1.position.set(1, 1, 1);
+      scene.add(light1);
+
+      const light2 = new THREE.AmbientLight(0x404040);
+      scene.add(light2);
+
+      camera.position.z = 100;
+
+      // Animation loop
+      function animate() {
+        requestAnimationFrame(animate);
+        torusKnot.rotation.x += 0.01;
+        torusKnot.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+      animate();
+    });
 
     const showLogin = () => {
       currentComponent.value = Login;
@@ -59,7 +102,8 @@ export default {
       showLogin,
       showSignUp,
       closeComponent,
-      handleUpload
+      handleUpload,
+      canvas
     };
   }
 }
@@ -173,6 +217,12 @@ export default {
   position: absolute;
   top: -75px;
   z-index: 4;
+  overflow: hidden;
+}
+
+.model-canvas {
+  width: 100%;
+  height: 100%;
 }
 
 .buttons-container {

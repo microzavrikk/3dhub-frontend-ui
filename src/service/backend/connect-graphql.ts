@@ -67,7 +67,8 @@ const options: ApolloClientOptions<any> = {
     query: {
       fetchPolicy: 'network-only'
     }
-  }
+  },
+  connectToDevTools: true
 }
 
 export const apolloClient = new ApolloClient(options)
