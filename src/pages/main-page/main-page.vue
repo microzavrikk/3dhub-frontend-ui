@@ -1,308 +1,208 @@
 <template>
-  <div class="main-page">
-    <div class="image-container">
-      <div class="background-image"></div>
-      <div class="gradient-background"></div>
-    </div>
-    <div class="search-container">
-      <div class="search-wrapper">
-        <i class="fa-brands fa-searchengin"></i>
-        <input type="text" placeholder="Search..." class="search-input" />
+  <div class="main-container">
+    <header class="header">
+      <div class="logo">
+        <h1>3DHUB</h1>
       </div>
-    </div>
-    <div class="dark-area">
-      <div class="square-bump">
-        <canvas ref="canvas" class="model-canvas"></canvas>
+      
+      <div class="search-bar">
+        <input type="text" placeholder="Search 3D models..." class="search-input">
+        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        </svg>
       </div>
-    </div>
-    <div class="buttons-container">
-      <button class="login-btn" @click="showLogin">Log In</button>
-      <button class="register-btn" @click="showSignUp">Register</button>
-      <button class="upload-btn" @click="handleUpload">Upload</button>
-    </div>
-    <div class="modal-wrapper" v-if="currentComponent">
-      <component 
-        :is="currentComponent" 
-        @close="closeComponent"
-        class="modal-component"
-      ></component>
-    </div>
+
+      <div class="nav-buttons">
+        <button class="nav-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+          Sign In
+        </button>
+        <button class="nav-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+          Sign Up
+        </button>
+        <button class="nav-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+          </svg>
+          Upload
+        </button>
+      </div>
+    </header>
+
+    <main class="welcome-section">
+      <h2>Welcome to 3DHUB</h2>
+      <p>Your Gateway to Amazing 3D Content</p>
+      <p class="subtitle">Create, Share, and Discover Incredible 3D Models</p>
+      <div class="welcome-buttons">
+        <button class="action-btn explore">
+          Explore Models
+          <span class="arrow">→</span>
+        </button>
+        <button class="action-btn create">
+          Start Creating
+          <span class="arrow">→</span>
+        </button>
+      </div>
+    </main>
   </div>
 </template>
 
-<script>
-import { ref, onMounted } from 'vue';
-import Login from '../../components/login-window/login.vue';
-import SignUp from '../../components/signup-window/signup.vue';
-import * as THREE from 'three';
-
-export default {
-  name: 'MainPage',
-  setup() {
-    const currentComponent = ref(null);
-    const canvas = ref(null);
-
-    onMounted(() => {
-      // Three.js setup
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, 150 / 150, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer({ 
-        canvas: canvas.value,
-        alpha: true
-      });
-      renderer.setSize(150, 150);
-
-      // Create a torus knot
-      const geometry = new THREE.TorusKnotGeometry(30, 8, 100, 16);
-      const material = new THREE.MeshPhongMaterial({ 
-        color: 0x00ff00,
-        shininess: 100
-      });
-      const torusKnot = new THREE.Mesh(geometry, material);
-      scene.add(torusKnot);
-
-      // Add lights
-      const light1 = new THREE.DirectionalLight(0xffffff, 1);
-      light1.position.set(1, 1, 1);
-      scene.add(light1);
-
-      const light2 = new THREE.AmbientLight(0x404040);
-      scene.add(light2);
-
-      camera.position.z = 100;
-
-      // Animation loop
-      function animate() {
-        requestAnimationFrame(animate);
-        torusKnot.rotation.x += 0.01;
-        torusKnot.rotation.y += 0.01;
-        renderer.render(scene, camera);
-      }
-      animate();
-    });
-
-    const showLogin = () => {
-      currentComponent.value = Login;
-    };
-
-    const showSignUp = () => {
-      currentComponent.value = SignUp;
-    };
-
-    const closeComponent = () => {
-      currentComponent.value = null;
-    };
-
-    const handleUpload = () => {
-      // Add upload logic here
-    };
-
-    return {
-      currentComponent,
-      showLogin,
-      showSignUp,
-      closeComponent,
-      handleUpload,
-      canvas
-    };
-  }
-}
+<script setup lang="ts">
 </script>
 
 <style scoped>
-.main-page {
-  width: 100%;
-  height: 100vh;
+.main-container {
+  min-height: 100vh;
+  background: linear-gradient(145deg, #f0f9ff, #e0f2fe);
+  color: #0c4a6e;
+}
+
+.header {
   display: flex;
-  flex-direction: column;
-  position: relative;
-  font-family: 'Inter', sans-serif;
-  color: #ffffff;
-}
-
-.image-container {
-  position: relative;
-  width: 100%;
-  height: 70%;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.background-image {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: url('@/assets/main-page/anime.jpg') no-repeat center center;
-  background-size: cover;
-  z-index: 1;
-}
-
-.gradient-background {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #00c6ff 100%);
-  opacity: 0.85;
-  z-index: 2;
-}
-
-.search-container {
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80%;
-  z-index: 10;
-  display: flex;
-  justify-content: center;
-  pointer-events: auto;
-}
-
-.search-wrapper {
-  position: relative;
-  width: 1000px;
-  display: flex;
+  justify-content: space-between;
   align-items: center;
+  padding: 1.5rem 2rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(14, 165, 233, 0.2);
+  box-shadow: 0 2px 10px rgba(14, 165, 233, 0.1);
 }
 
-.fa-searchengin {
-  position: absolute;
-  left: 16px;
-  color: #6B7280;
-  pointer-events: none;
-  z-index: 11;
+.logo h1 {
+  color: #0284c7;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.search-bar {
+  position: relative;
+  width: 40%;
 }
 
 .search-input {
   width: 100%;
-  padding: 8px 16px 8px 48px;
-  background-color: rgba(17, 24, 39, 0.7);
-  border: 1px solid rgba(75, 85, 99, 0.4);
-  border-radius: 8px;
-  color: white;
-  font-size: 0.95rem;
-  backdrop-filter: blur(4px);
-  transition: all 0.3s ease;
-  z-index: 10;
-}
-
-.search-input::placeholder {
-  color: #6B7280;
+  padding: 12px 40px 12px 15px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(14, 165, 233, 0.3);
+  border-radius: 12px;
+  color: #0c4a6e;
+  font-size: 1rem;
+  transition: all 0.3s;
 }
 
 .search-input:focus {
   outline: none;
-  background-color: rgba(17, 24, 39, 0.8);
-  border-color: rgba(75, 85, 99, 0.6);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+  border-color: #0ea5e9;
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.2);
 }
 
-.dark-area {
-  width: 100%;
-  height: 30%;
-  background-color: #1a1a1a;
+.search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #0ea5e9;
+}
+
+.nav-buttons {
   display: flex;
-  justify-content: center;
+  gap: 1rem;
+}
+
+.nav-btn {
+  display: flex;
   align-items: center;
-  position: relative;
-  z-index: 3;
-}
-
-.square-bump {
-  width: 150px;
-  height: 150px;
-  background-color: #333;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  border-radius: 10px;
-  position: absolute;
-  top: -75px;
-  z-index: 4;
-  overflow: hidden;
-}
-
-.model-canvas {
-  width: 100%;
-  height: 100%;
-}
-
-.buttons-container {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 10px;
-  z-index: 10;
-  pointer-events: auto;
-}
-
-button {
+  gap: 8px;
   padding: 10px 20px;
-  font-size: 1rem;
-  border: none;
-  border-radius: 5px;
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  border-radius: 12px;
+  color: #0284c7;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
-  position: relative;
-  z-index: 10;
+  transition: all 0.3s;
 }
 
-.login-btn {
-  background-color: transparent;
-  color: white;
-  border: 2px solid white;
+.nav-btn:hover {
+  background: rgba(14, 165, 233, 0.2);
+  transform: translateY(-2px);
 }
 
-.register-btn {
-  background-color: #269dcc;
-  color: white;
+.welcome-section {
+  text-align: center;
+  margin-top: 6rem;
+  padding: 0 2rem;
 }
 
-.upload-btn {
-  background-color: #28a7d8;
-  color: white;
+.welcome-section h2 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, #0284c7, #0ea5e9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome-section p {
+  font-size: 1.5rem;
+  color: #0c4a6e;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.subtitle {
+  font-size: 1.2rem !important;
+  color: #0369a1 !important;
+  margin-top: 1rem !important;
+  margin-bottom: 2rem !important;
+}
+
+.welcome-buttons {
   display: flex;
-  align-items: center;
-}
-
-.upload-icon {
-  margin-right: 5px;
-}
-
-button:hover {
-  transform: scale(1.05);
-}
-
-/* Modal styles */
-.modal-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
+  gap: 1.5rem;
   justify-content: center;
+  margin-top: 2.5rem;
+}
+
+.action-btn {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
   align-items: center;
-  z-index: 1000;
+  gap: 0.5rem;
 }
 
-.modal-component {
-  position: relative;
-  z-index: 1001;
-  background-color: #1a1a1a;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-/* Ensure modals are visible and styled properly */
-:deep(.modal-component) {
-  background-color: #1a1a1a;
+.explore {
+  background: #0ea5e9;
   color: white;
-  border-radius: 10px;
-  padding: 20px;
+  border: none;
+}
+
+.create {
+  background: white;
+  color: #0ea5e9;
+  border: 2px solid #0ea5e9;
+}
+
+.action-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(14, 165, 233, 0.3);
+}
+
+.arrow {
+  transition: transform 0.3s;
+}
+
+.action-btn:hover .arrow {
+  transform: translateX(5px);
 }
 </style>

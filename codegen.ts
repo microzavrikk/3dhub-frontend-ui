@@ -3,7 +3,7 @@ import { CodegenConfig } from '@graphql-codegen/cli';
 const config: CodegenConfig = {
   schema: 'http://localhost:4000/graphql',
   
-  documents: "src/**/*.gql",
+  documents: ["src/**/*.gql", "src/**/*.graphql"],
   generates: {
     './src/types.ts': {
       plugins: ['typescript', 'typescript-operations', 'typescript-vue-apollo'],

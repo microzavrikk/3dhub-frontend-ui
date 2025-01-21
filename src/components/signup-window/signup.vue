@@ -107,7 +107,6 @@
 
 <script setup lang="ts">
 import { ref, defineEmits } from 'vue';
-import { useRegisterMutation } from '../../types';
 import { RegisterForm } from '../common.types'
 import EmailVerificationModal from '../email-verification-modal/email-verification-modal.vue';
 

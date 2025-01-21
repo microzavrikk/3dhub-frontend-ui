@@ -1,4 +1,4 @@
-import { createApp, provide } from 'vue'
+import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './routes/index'
@@ -13,7 +13,9 @@ const apolloClient = new ApolloClient({
 })
 
 const app = createApp(App)
+
 app.use(createPinia())
-app.provide(DefaultApolloClient, apolloClient)
 app.use(router)
+app.provide(DefaultApolloClient, apolloClient)
+
 app.mount('#app')

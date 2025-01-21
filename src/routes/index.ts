@@ -1,21 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import App from '../App.vue'
 import uploadAsset from '../pages/upload-asset/upload-asset.vue'
 import uploadInfoAsset from '../pages/upload-info-asset/upload-info-asset.vue'
 import thirdDScene from '../components/3d-scene/3d-scene.vue'
-import path from 'path'
-import primeVueTest from '../prime-vue-test.vue'
-import UserAuthService from '../service/auth/user.auth.service'
+import { UserAuthService } from '../service/auth/user.auth.service'
 import signup from '../components/signup-window/signup.vue'
 import login from '../components/login-window/login.vue'
 import EmailVerificationModal from '../components/email-verification-modal/email-verification-modal.vue'
 import MainPage from '../pages/main-page/main-page.vue'
+import Home from '../pages/home-page/Home.vue'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: App
+    component: Home
+  },
+  {
+    path: '/home',
+    name: 'Home',
+    component: Home
   },
   {
     path: '/main-page',
@@ -53,11 +56,6 @@ const routes = [
     path: '/3d-scene',
     name: '3DScene',
     component: thirdDScene
-  },
-  {
-    path: '/test',
-    name: 'Test',
-    component: primeVueTest
   }
 ]
 

@@ -1,6 +1,13 @@
 <template>
-    <RouterView />
-  </template>
-  
-<script setup lang="ts"></script>
-  
+  <div id="app">
+    <router-view></router-view>
+  </div>
+</template>
+
+<script setup lang="ts">
+// Если есть какая-то логика
+</script>
+
+<style>
+/* Ваши стили */
+</style>
