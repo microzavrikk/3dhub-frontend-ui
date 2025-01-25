@@ -1,23 +1,28 @@
 import { defineStore } from 'pinia';
 
 interface ModelState {
-  modelFile: File | null;
+  model: File | null;
   previewUrl: string | null;
+  assetFiles: File[];
+  assetUrls: Map<string, string>;
 }
 
 export const useModelStore = defineStore('model', {
   state: (): ModelState => ({
-    modelFile: null,
-    previewUrl: null
+    model: null,
+    previewUrl: null,
+    assetFiles: [],
+    assetUrls: new Map()
   }),
-  
+
   getters: {
     storeDebugInfo: (state): object => ({
-      modelFileName: state.modelFile?.name || 'No file selected',
-      modelFileSize: state.modelFile ? `${(state.modelFile.size / 1024).toFixed(2)} KB` : 'N/A',
-      modelFileType: state.modelFile?.type || 'N/A',
+      modelFileName: state.model?.name || 'No file selected',
+      modelFileSize: state.model ? `${(state.model.size / 1024).toFixed(2)} KB` : 'N/A',
+      modelFileType: state.model?.type || 'N/A',
       previewUrl: state.previewUrl || 'No preview URL',
-      lastModified: state.modelFile ? new Date(state.modelFile.lastModified).toLocaleString() : 'N/A'
+      lastModified: state.model ? new Date(state.model.lastModified).toLocaleString() : 'N/A',
+      assetFilesCount: state.assetFiles.length
     })
   },
 
@@ -27,18 +32,70 @@ export const useModelStore = defineStore('model', {
         URL.revokeObjectURL(this.previewUrl);
       }
       
-      this.modelFile = file;
-      this.previewUrl = URL.createObjectURL(file) as string;
+      this.model = file;
+      this.previewUrl = URL.createObjectURL(file);
+      this.addAssetFile(file);
       
       this.logStoreState();
     },
     
+    getModel(): File | null {
+      return this.model;
+    },
+    
+    addAssetFile(file: File): void {
+      const extension = file.name.split('.').pop()?.toLowerCase();
+      const acceptedTypes = ['gltf', 'obj', 'bin', 'png', 'jpg', 'jpeg'];
+      
+      if (extension && acceptedTypes.includes(extension)) {
+        console.log('Adding asset file:', file.name);
+        if (!this.assetFiles.find(f => f.name === file.name)) {
+          this.assetFiles.push(file);
+          const url = URL.createObjectURL(file);
+          this.assetUrls.set(file.name, url);
+        }
+      }
+    },
+
+    removeAssetFile(file: File): void {
+      this.assetFiles = this.assetFiles.filter(f => f.name !== file.name);
+      if (this.assetUrls.has(file.name)) {
+        URL.revokeObjectURL(this.assetUrls.get(file.name)!);
+        this.assetUrls.delete(file.name);
+      }
+      
+      if (this.model && file.name === this.model.name) {
+        this.model = null;
+        if (this.previewUrl) {
+          URL.revokeObjectURL(this.previewUrl);
+          this.previewUrl = null;
+        }
+      }
+      
+      this.logStoreState();
+    },
+
+    getAssetFiles(): File[] {
+      return this.assetFiles;
+    },
+    
+    getAssetUrl(fileName: string): string | undefined {
+      return this.assetUrls.get(fileName);
+    },
+    
     clearModel(): void {
-      if (this.previewUrl && typeof this.previewUrl === 'string') {
+      if (this.previewUrl) {
         URL.revokeObjectURL(this.previewUrl);
       }
-      this.modelFile = null;
+      
+      this.assetUrls.forEach(url => {
+        URL.revokeObjectURL(url);
+      });
+      
+      this.model = null;
       this.previewUrl = null;
+      this.assetFiles = [];
+      this.assetUrls.clear();
       
       this.logStoreState();
     },
@@ -46,10 +103,30 @@ export const useModelStore = defineStore('model', {
     logStoreState(): void {
       console.group('Model Store State');
       console.log('Debug Info:', this.storeDebugInfo);
-      console.log('Raw State:', {
-        modelFile: this.modelFile,
-        previewUrl: this.previewUrl
+      
+      // Логируем основную модель
+      console.group('Model Files:');
+      if (this.model) {
+        console.log('Main Model:', {
+          name: this.model.name,
+          url: this.previewUrl,
+          size: `${(this.model.size / 1024).toFixed(2)} KB`
+        });
+      }
+      console.groupEnd();
+
+      // Логируем ассеты и их URL
+      console.group('Asset Files:');
+      this.assetFiles.forEach(file => {
+        const url = this.assetUrls.get(file.name);
+        console.log(`${file.name}:`, {
+          url: url,
+          size: `${(file.size / 1024).toFixed(2)} KB`,
+          type: file.type
+        });
       });
+      console.groupEnd();
+
       console.groupEnd();
     }
   }
