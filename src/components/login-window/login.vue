@@ -76,9 +76,10 @@ const handleLogin = async () => {
       password: password.value,
       rememberMe: rememberMe.value
     });
-
-    if (response.data?.login?.token) {
-      UserAuthService.setAuthToken(response.data.login.token);
+    console.log(response.data.Auth.login.accessToken);
+    if (response.data.Auth.login.accessToken) {
+      UserAuthService.setAuthToken(response.data.Auth.login.accessToken);
+      UserAuthService.setUser(response.data.Auth.login.user);
       closeModal();
     }
   } catch (error) {
@@ -94,19 +95,24 @@ const closeModal = () => {
 <style scoped>
 .login-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
+  inset: 0;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
-  backdrop-filter: blur(10px);
+}
+
+.login-modal::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  z-index: -1;
 }
 
 .login-content {
+  position: relative;
   background: linear-gradient(145deg, #1e1e2e, #2d2d44);
   border-radius: 20px;
   padding: 2.5rem;
@@ -114,6 +120,8 @@ const closeModal = () => {
   max-width: 420px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: fadeIn 0.3s ease-out;
+  margin: 1rem;
 }
 
 .login-header {
@@ -345,15 +353,11 @@ const closeModal = () => {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.login-content {
-  animation: fadeIn 0.4s ease-out;
 }
 </style>

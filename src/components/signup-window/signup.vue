@@ -109,6 +109,7 @@
 import { ref, defineEmits } from 'vue';
 import { RegisterForm } from '../common.types'
 import EmailVerificationModal from '../email-verification-modal/email-verification-modal.vue';
+import { useRegisterMutation } from '../../types';
 
 const registerForm = ref<RegisterForm>({
   username: '',
@@ -127,7 +128,7 @@ const policyAccepted = ref(false);
 
 const emit = defineEmits(['close']);
 
-const { mutate: register, onError } = useRegisterMutation();
+const { mutate: register } = useRegisterMutation();
 
 const showVerificationModal = ref(false);
 
@@ -144,9 +145,9 @@ const handleRegister = async () => {
         email: registerForm.value.email,
         password: registerForm.value.password
       }
-    });
+    }) ?? {};
     
-    if (response) {
+    if (response?.data?.Auth?.register?.accessToken) {
       showVerificationModal.value = true;
     }
   } catch (error: any) {
@@ -187,19 +188,24 @@ const closeModal = () => {
 <style scoped>
 .signup-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
+  inset: 0;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
-  backdrop-filter: blur(10px);
+}
+
+.signup-modal::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  z-index: -1;
 }
 
 .signup-content {
+  position: relative;
   background: linear-gradient(145deg, #1e1e2e, #2d2d44);
   border-radius: 20px;
   padding: 2.5rem;
@@ -207,7 +213,8 @@ const closeModal = () => {
   max-width: 420px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  animation: fadeIn 0.4s ease-out;
+  animation: fadeIn 0.3s ease-out;
+  margin: 1rem;
 }
 
 .signup-header {
@@ -456,7 +463,7 @@ const closeModal = () => {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
