@@ -1,18 +1,27 @@
 export class UserAuthService {
     static setAuthToken(token: string) {
-      localStorage.setItem('access_token', token)
+      console.log("set token", token);
+      localStorage.setItem('token', token)
     }
   
-    static getAuthToken() {
-      return localStorage.getItem('access_token')
+    static getAuthToken(): string | null {
+      return localStorage.getItem('token')
     }
   
-    static hasAuthToken() {
-      return !!localStorage.getItem('access_token')
+    static isAuthenticated(): boolean {
+      return !!this.getAuthToken()
     }
   
     static removeAuthToken() {
-      localStorage.removeItem('access_token')
+      localStorage.removeItem('token')
+    }
+
+    static getUser() {
+      return localStorage.getItem('user')
+    }
+
+    static setUser(user: any) {
+      localStorage.setItem('user', JSON.stringify(user))
     }
   }
   

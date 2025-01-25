@@ -8,21 +8,12 @@ import login from '../components/login-window/login.vue'
 import EmailVerificationModal from '../components/email-verification-modal/email-verification-modal.vue'
 import MainPage from '../pages/main-page/main-page.vue'
 import Home from '../pages/home-page/Home.vue'
+import Profile from '../pages/profile-page/profile.vue'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
-  },
-  {
-    path: '/home',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/main-page',
-    name: 'MainPage',
     component: MainPage
   },
   {
@@ -56,6 +47,12 @@ const routes = [
     path: '/3d-scene',
     name: '3DScene',
     component: thirdDScene
+  },
+  {
+    path: '/profile/:username',
+    name: 'Profile',
+    component: Profile,
+    meta: { requiresAuth: true }
   }
 ]
 
@@ -73,7 +70,8 @@ router.beforeEach(async (to, from, next) => {
 });
 
 async function isAuthenticated(): Promise<boolean> {
-  return true
+  console.log(UserAuthService.isAuthenticated());
+  return UserAuthService.isAuthenticated();
 }
 
 export default router

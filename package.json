@@ -20,6 +20,7 @@
     "@tresjs/core": "^4.3.2",
     "@vue/apollo-composable": "^4.2.1",
     "@vue/apollo-option": "^4.2.0",
+    "axios": "^1.7.9",
     "graphql-ws": "^5.16.0",
     "install": "^0.13.0",
     "npm": "^11.0.0",
