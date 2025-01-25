@@ -81,8 +81,8 @@ export type AssetsStorageQueryGetFileByUserIdAndFileNameArgs = {
 export type AuthMutation = {
   __typename?: 'AuthMutation';
   deleteAccount: Scalars['Boolean']['output'];
-  login: TokenResponse;
-  register: TokenResponse;
+  login: AuthPayload;
+  register: AuthPayload;
 };
 
 
@@ -102,7 +102,7 @@ export type AuthMutationRegisterArgs = {
 
 export type AuthPayload = {
   __typename?: 'AuthPayload';
-  token: Scalars['String']['output'];
+  accessToken: Scalars['String']['output'];
   user: User;
 };
 
@@ -183,6 +183,7 @@ export type Query = {
   AssetsQuery?: Maybe<AssetsStorageQuery>;
   Category?: Maybe<CategoryQuery>;
   Ping?: Maybe<PingQuery>;
+  SearchUser?: Maybe<SearchUserQuery>;
   getPosts: Array<Post>;
   getUser?: Maybe<User>;
 };
@@ -190,6 +191,53 @@ export type Query = {
 
 export type QueryGetUserArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type SearchUserByEmailInput = {
+  email: Scalars['String']['input'];
+};
+
+export type SearchUserByIdInput = {
+  id: Scalars['ID']['input'];
+};
+
+export type SearchUserByUsernameInput = {
+  username: Scalars['String']['input'];
+};
+
+export type SearchUserInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  username?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SearchUserQuery = {
+  __typename?: 'SearchUserQuery';
+  findAllUsers?: Maybe<Array<User>>;
+  findUserByEmail?: Maybe<User>;
+  findUserById?: Maybe<User>;
+  findUserByUsername?: Maybe<User>;
+  searchUsers?: Maybe<Array<User>>;
+};
+
+
+export type SearchUserQueryFindUserByEmailArgs = {
+  data: SearchUserByEmailInput;
+};
+
+
+export type SearchUserQueryFindUserByIdArgs = {
+  data: SearchUserByIdInput;
+};
+
+
+export type SearchUserQueryFindUserByUsernameArgs = {
+  data: SearchUserByUsernameInput;
+};
+
+
+export type SearchUserQuerySearchUsersArgs = {
+  data?: InputMaybe<SearchUserInput>;
 };
 
 export type TokenResponse = {
@@ -218,6 +266,8 @@ export type User = {
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  role: Scalars['String']['output'];
+  username: Scalars['String']['output'];
 };
 
 export type UserLoginInput = {
@@ -237,12 +287,19 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', Auth?: { __typename?: 'AuthMutation', login: { __typename?: 'TokenResponse', accessToken: string } } | null };
+export type LoginMutation = { __typename?: 'Mutation', Auth?: { __typename?: 'AuthMutation', login: { __typename?: 'AuthPayload', accessToken: string, user: { __typename?: 'User', id: string, email: string, username: string, role: string } } } | null };
 
 export type PingServerQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type PingServerQuery = { __typename?: 'Query', Ping?: { __typename?: 'PingQuery', ping: string } | null };
+
+export type RegisterMutationVariables = Exact<{
+  data: UserRegisterInput;
+}>;
+
+
+export type RegisterMutation = { __typename?: 'Mutation', Auth?: { __typename?: 'AuthMutation', register: { __typename?: 'AuthPayload', accessToken: string, user: { __typename?: 'User', id: string, email: string, username: string, role: string } } } | null };
 
 
 export const LoginDocument = gql`
@@ -250,6 +307,12 @@ export const LoginDocument = gql`
   Auth {
     login(data: {email: $email, password: $password}) {
       accessToken
+      user {
+        id
+        email
+        username
+        role
+      }
     }
   }
 }
@@ -304,3 +367,40 @@ export function usePingServerLazyQuery(options: VueApolloComposable.UseQueryOpti
   return VueApolloComposable.useLazyQuery<PingServerQuery, PingServerQueryVariables>(PingServerDocument, {}, options);
 }
 export type PingServerQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<PingServerQuery, PingServerQueryVariables>;
+export const RegisterDocument = gql`
+    mutation Register($data: UserRegisterInput!) {
+  Auth {
+    register(data: $data) {
+      accessToken
+      user {
+        id
+        email
+        username
+        role
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useRegisterMutation__
+ *
+ * To run a mutation, you first call `useRegisterMutation` within a Vue component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterMutation` returns an object that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - Several other properties: https://v4.apollo.vuejs.org/api/use-mutation.html#return
+ *
+ * @param options that will be passed into the mutation, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/mutation.html#options;
+ *
+ * @example
+ * const { mutate, loading, error, onDone } = useRegisterMutation({
+ *   variables: {
+ *     data: // value for 'data'
+ *   },
+ * });
+ */
+export function useRegisterMutation(options: VueApolloComposable.UseMutationOptions<RegisterMutation, RegisterMutationVariables> | ReactiveFunction<VueApolloComposable.UseMutationOptions<RegisterMutation, RegisterMutationVariables>> = {}) {
+  return VueApolloComposable.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument, options);
+}
+export type RegisterMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<RegisterMutation, RegisterMutationVariables>;
