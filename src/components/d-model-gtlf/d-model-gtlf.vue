@@ -6,7 +6,7 @@ const props = defineProps({
   modelPath: {
     type: String as PropType<string>,
     required: true,
-    default: ''
+    default: 'https://raw.githubusercontent.com/Tresjs/assets/main/models/gltf/ugly-naked-bunny/ugly-naked-bunny-animated.gltf'
   },
   initialAnimation: {
     type: String as PropType<string>,
