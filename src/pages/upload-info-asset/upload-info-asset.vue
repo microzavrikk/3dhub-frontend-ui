@@ -1,122 +1,187 @@
 <template>
   <div class="model-edit-container">
     <div class="content-wrapper">
-      <!-- 3D Scene Display Area -->
       <div class="model-preview-section">
-        <h2 class="preview-header">Model Preview</h2>
-        <div class="model-preview">
-          <ThirdDScene :model-file="modelFile"/>
+        <div class="preview-header-bar">
+          <h2 class="preview-header">Model Preview</h2>
+          <div class="preview-controls">
+            <button class="control-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+              </svg>
+              Fullscreen
+            </button>
+            <button class="control-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+              Settings
+            </button>
+          </div>
+        </div>
+        <div class="preview-container">
+          <div class="model-preview">
+            <ThirdDScene :model-file="modelFile"/>
+          </div>
+          <div class="preview-info">
+            <div v-if="modelFile" class="upload-status">
+              <div class="status-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <span>Model Uploaded</span>
+            </div>
+            <div class="model-stats">
+              <div class="stat-item">
+                <span class="stat-label">File Size</span>
+                <span class="stat-value">{{ formatFileSize(modelFile?.size) }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Format</span>
+                <span class="stat-value">{{ getFileFormat(modelFile?.name) }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Uploaded</span>
+                <span class="stat-value">Just now</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="model-edit-sidebar">
         <h2 class="edit-header">Model Details</h2>
         <form @submit.prevent="handleSubmit" class="edit-form">
-          <!-- Name Input -->
-          <div class="form-group">
-            <label for="name" class="form-label">Name</label>
-            <input
-              v-model="formData.name"
-              type="text"
-              id="name"
-              class="form-input"
-              required
-              placeholder="Enter model name"
-            />
+          <div class="form-section basic-info">
+            <h3 class="section-title">Basic Information</h3>
+            <div class="form-group">
+              <label for="name" class="form-label">Name</label>
+              <input
+                v-model="formData.name"
+                type="text"
+                id="name"
+                class="form-input"
+                required
+                placeholder="Enter model name"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="description" class="form-label">Description</label>
+              <textarea
+                v-model="formData.description"
+                id="description"
+                class="form-textarea"
+                placeholder="Describe your model..."
+                rows="3"
+              ></textarea>
+            </div>
           </div>
 
-          <!-- Description Editor -->
-          <div class="form-group">
-            <label for="description" class="form-label">Description (Optional)</label>
-            <textarea
-              v-model="formData.description"
-              id="description"
-              class="form-textarea"
-              placeholder="Describe your model..."
-              rows="4"
-            ></textarea>
-          </div>
-
-          <!-- Category Dropdown -->
-          <div class="form-group">
-            <label for="category" class="form-label">Category</label>
-            <select
-              v-model="formData.category"
-              id="category"
-              class="form-input"
-              required
-            >
-              <option value="" disabled>Select category</option>
-              <option 
-                v-for="category in categories" 
-                :key="category" 
-                :value="category"
-              >
-                {{ category }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Tags Section -->
-          <div class="form-group">
-            <label class="form-label">Tags</label>
-            <div class="tags-input">
-              <div class="tags-container">
-                <span
-                  v-for="tag in formData.tags"
-                  :key="tag"
-                  class="tag"
+          <div class="form-section categories-tags">
+            <h3 class="section-title">Categories & Tags</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="category" class="form-label">Category</label>
+                <select
+                  v-model="formData.category"
+                  id="category"
+                  class="form-select"
+                  required
                 >
-                  {{ tag }}
-                  <button
-                    @click.prevent="removeTag(tag)"
-                    class="tag-remove"
-                  >×</button>
-                </span>
+                  <option value="" disabled>Select category</option>
+                  <option 
+                    v-for="category in categories" 
+                    :key="category" 
+                    :value="category"
+                  >
+                    {{ category }}
+                  </option>
+                </select>
               </div>
-              <div class="tag-input-wrapper">
-                <input
-                  v-model="newTag"
-                  @keydown.enter.prevent="addTag"
-                  type="text"
-                  placeholder="Type and press Enter..."
-                  class="tag-input"
-                />
-                <button 
-                  @click.prevent="addTag"
-                  class="tag-add-btn"
-                >Add</button>
-              </div>
-              <div class="suggested-tags">
+
+              <div class="form-group">
+                <label class="form-label">Access</label>
                 <button
-                  v-for="tag in suggestedTags"
-                  :key="tag"
-                  @click.prevent="addSuggestedTag(tag)"
-                  class="suggested-tag"
-                >{{ tag }}</button>
+                  @click.prevent="formData.publicAccess = !formData.publicAccess"
+                  class="access-toggle"
+                  :class="{ 'public': formData.publicAccess }"
+                >
+                  {{ formData.publicAccess ? 'Public' : 'Private' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Tags</label>
+              <div class="tags-input">
+                <div class="tags-container">
+                  <span
+                    v-for="tag in formData.tags"
+                    :key="tag"
+                    class="tag"
+                  >
+                    {{ tag }}
+                    <button
+                      @click.prevent="removeTag(tag)"
+                      class="tag-remove"
+                    >×</button>
+                  </span>
+                </div>
+                <div class="tag-input-container">
+                  <input
+                    v-model="newTag"
+                    @keydown.enter.prevent="addTag"
+                    type="text"
+                    placeholder="Add tag..."
+                    class="tag-input"
+                  />
+                  <button 
+                    @click.prevent="addTag"
+                    class="add-tag-btn"
+                  >
+                    Add
+                  </button>
+                </div>
+                <div class="suggested-tags">
+                  <button
+                    v-for="tag in suggestedTags"
+                    :key="tag"
+                    @click.prevent="addSuggestedTag(tag)"
+                    class="suggested-tag"
+                  >{{ tag }}</button>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Additional Options -->
-          <div class="form-group options-group">
-            <div class="toggle-item">
-            </div>
-            <div class="toggle-item">
-              <span class="toggle-label">Public Access</span>
-              <button
-                @click.prevent="formData.publicAccess = !formData.publicAccess"
-                class="toggle-switch"
-                :class="{ 'active': formData.publicAccess }"
-              >
-                <span class="toggle-slider"></span>
-              </button>
+          <div class="form-section advanced-settings">
+            <h3 class="section-title">Advanced Settings</h3>
+            <div class="settings-grid">
+              <div class="setting-item">
+                <label class="setting-label">
+                  <input type="checkbox" v-model="formData.allowComments"/>
+                  Allow Comments
+                </label>
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">
+                  <input type="checkbox" v-model="formData.allowTextureInspection"/>
+                  Allow Texture Inspection
+                </label>
+              </div>
+              <div class="setting-item">
+                <label class="setting-label">
+                  <input type="checkbox" v-model="formData.ageRestricted"/>
+                  Age Restricted Content
+                </label>
+              </div>
             </div>
           </div>
 
-          <!-- Submit Button -->
           <button type="submit" class="submit-btn" :disabled="isSubmitting">
-            <span class="btn-icon">💾</span>
             {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
           </button>
         </form>
@@ -188,6 +253,19 @@ const suggestedTags = [
   'pbr', 'textured', 'sci-fi', 'fantasy', 'realistic'
 ];
 
+function formatFileSize(bytes: number | undefined): string {
+  if (!bytes) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+}
+
+function getFileFormat(filename: string | undefined): string {
+  if (!filename) return 'Unknown';
+  return filename.split('.').pop()?.toUpperCase() || 'Unknown';
+}
+
 async function handleSubmit() {
   try {
     isSubmitting.value = true;
@@ -230,12 +308,11 @@ async function handleSubmit() {
     });
 
     if (response.data.success) {
-      router.push('/assets'); // Redirect to assets page after successful upload
+      router.push('/assets');
     }
 
   } catch (error) {
     console.error('Error uploading asset:', error);
-    // Handle error (show error message to user)
   } finally {
     isSubmitting.value = false;
   }
@@ -262,279 +339,370 @@ function removeTag(tag: string) {
 <style scoped>
 .model-edit-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
-  color: #ffffff;
-  position: relative;
-  overflow: hidden;
-}
-
-.model-edit-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(147, 51, 234, 0.1) 0%, transparent 50%);
-  pointer-events: none;
+  background: #0a0a0a;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  padding: 2rem;
 }
 
 .content-wrapper {
   display: grid;
-  grid-template-columns: 1fr 400px;
+  grid-template-columns: minmax(800px, 2fr) minmax(500px, 1fr);
   gap: 2rem;
-  padding: 2rem;
-  position: relative;
-  z-index: 1;
-  max-width: 1600px;
+  max-width: 1800px;
   margin: 0 auto;
-  height: calc(100vh - 4rem);
 }
 
 .model-preview-section {
+  padding: 0;
+  background: #141414;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
+}
+
+.preview-header-bar {
+  background: #1a1a1a;
+  padding: 1rem 2rem;
+  border-radius: 20px 20px 0 0;
+  border-bottom: 2px solid #2a2a2a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preview-controls {
+  display: flex;
   gap: 1rem;
 }
 
-.preview-header {
-  color: #ffffff;
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
+.control-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #242424;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.model-preview {
-  flex: 1;
-  background: rgba(36, 36, 48, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-  min-height: 300px;
+.control-btn:hover {
+  background: #2a2a2a;
+  border-color: #4CAF50;
 }
 
-.model-edit-sidebar {
-  background: rgba(36, 36, 48, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  padding: 2rem;
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-  overflow-y: auto;
-  height: 100%;
-}
-
-.edit-header {
-  color: #ffffff;
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 2rem;
-}
-
-.edit-form {
+.preview-container {
+  padding: 1.5rem;
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.preview-header {
+  font-size: 18px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  margin: 0;
 }
 
-.form-label {
-  color: #a0aec0;
-  font-size: 0.9rem;
+.preview-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
+.model-stats {
+  display: flex;
+  gap: 2rem;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  font-size: 14px;
+  color: #fff;
   font-weight: 500;
 }
 
-.form-input,
-.form-textarea {
-  background: rgba(51, 51, 51, 0.6);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+.edit-header {
+  font-size: 24px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #2a2a2a;
+}
+
+.model-preview {
+  width: 100%;
+  height: 600px;
+  background: #1a1a1a;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.upload-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid #4CAF50;
   border-radius: 8px;
+  color: #4CAF50;
+}
+
+.status-icon {
+  display: flex;
+  align-items: center;
+}
+
+.status-icon svg {
+  stroke: #4CAF50;
+}
+
+.model-edit-sidebar {
+  background: #141414;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  height: fit-content;
+}
+
+.form-section {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  color: #ccc;
+  margin-bottom: 0.5rem;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
   padding: 0.75rem;
-  color: #ffffff;
-  font-size: 1rem;
-  transition: all 0.3s;
+  background: #242424;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  transition: all 0.2s ease;
 }
 
 .form-input:focus,
-.form-textarea:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+.form-textarea:focus,
+.form-select:focus {
+  border-color: #4CAF50;
   outline: none;
+  box-shadow: 0 0 0 1px #4CAF50;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.access-toggle {
+  width: 100%;
+  padding: 0.75rem;
+  background: #242424;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.access-toggle.public {
+  background: #4CAF50;
+  border-color: #4CAF50;
+}
+
+.tags-input {
+  background: #242424;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 0.75rem;
 }
 
 .tags-container {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  min-height: 32px;
 }
 
 .tag {
-  background: rgba(59, 130, 246, 0.2);
-  border-radius: 16px;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.9rem;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
+  padding: 0.35rem 0.75rem;
+  background: #4CAF50;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #fff;
 }
 
 .tag-remove {
   background: none;
   border: none;
-  color: #ef4444;
+  color: #fff;
   cursor: pointer;
-  padding: 0;
-  font-size: 1.2rem;
+  padding: 0 0 0 0.25rem;
+  font-size: 16px;
   line-height: 1;
 }
 
-.tag-input-wrapper {
+.tag-input-container {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .tag-input {
   flex: 1;
-  background: rgba(51, 51, 51, 0.6);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  border-radius: 8px;
   padding: 0.5rem;
-  color: #ffffff;
-  font-size: 0.9rem;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 14px;
 }
 
-.tag-add-btn {
-  background: rgba(59, 130, 246, 0.2);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: 8px;
+.add-tag-btn {
   padding: 0.5rem 1rem;
-  color: #ffffff;
+  background: #4CAF50;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: background 0.2s ease;
 }
 
-.tag-add-btn:hover {
-  background: rgba(59, 130, 246, 0.3);
+.add-tag-btn:hover {
+  background: #45a049;
 }
 
 .suggested-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 0.5rem;
 }
 
 .suggested-tag {
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  border-radius: 16px;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.8rem;
-  color: #ffffff;
+  padding: 0.35rem 0.75rem;
+  background: #333;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: background 0.2s ease;
 }
 
 .suggested-tag:hover {
-  background: rgba(59, 130, 246, 0.2);
+  background: #4CAF50;
 }
 
-.options-group {
-  background: rgba(51, 51, 51, 0.3);
-  border-radius: 8px;
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.setting-item {
+  background: #242424;
   padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #333;
 }
 
-.toggle-item {
+.setting-label {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0;
-}
-
-.toggle-label {
-  font-weight: 500;
-}
-
-.toggle-switch {
-  width: 50px;
-  height: 26px;
-  background: rgba(51, 51, 51, 0.6);
-  border-radius: 13px;
-  position: relative;
-  border: none;
+  gap: 0.5rem;
+  color: #fff;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.3s;
 }
 
-.toggle-switch.active {
-  background: #3b82f6;
-}
-
-.toggle-slider {
-  width: 20px;
-  height: 20px;
-  background: white;
-  border-radius: 50%;
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  transition: all 0.3s;
-}
-
-.toggle-switch.active .toggle-slider {
-  transform: translateX(24px);
+.setting-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #4CAF50;
 }
 
 .submit-btn {
-  background: linear-gradient(45deg, #3b82f6, #60a5fa);
-  color: white;
-  border: none;
-  border-radius: 8px;
+  width: 100%;
   padding: 1rem;
-  font-size: 1rem;
+  background: #4CAF50;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  transition: all 0.2s ease;
 }
 
-.submit-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+.submit-btn:hover {
+  background: #45a049;
 }
 
 .submit-btn:disabled {
-  opacity: 0.7;
+  background: #333;
   cursor: not-allowed;
-}
-
-.btn-icon {
-  font-size: 1.2rem;
-}
-
-@media (max-width: 1024px) {
-  .content-wrapper {
-    grid-template-columns: 1fr;
-  }
-  
-  .model-preview {
-    min-height: 400px;
-  }
 }
 </style>
