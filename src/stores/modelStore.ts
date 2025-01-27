@@ -5,6 +5,8 @@ interface ModelState {
   previewUrl: string | null;
   assetFiles: File[];
   assetUrls: Map<string, string>;
+  loadingProgress: number;
+  isLoading: boolean;
 }
 
 export const useModelStore = defineStore('model', {
@@ -12,7 +14,9 @@ export const useModelStore = defineStore('model', {
     model: null,
     previewUrl: null,
     assetFiles: [],
-    assetUrls: new Map()
+    assetUrls: new Map(),
+    loadingProgress: 0,
+    isLoading: false
   }),
 
   getters: {
@@ -27,15 +31,29 @@ export const useModelStore = defineStore('model', {
   },
 
   actions: {
-    setModel(file: File): void {
+    setLoadingProgress(progress: number) {
+      this.loadingProgress = progress;
+    },
+
+    setIsLoading(loading: boolean) {
+      this.isLoading = loading;
+    },
+
+    async setModel(file: File): Promise<void> {
+      this.setIsLoading(true);
+      this.setLoadingProgress(0);
+      
+      console.log('Setting model:', file.name);
       if (this.previewUrl) {
         URL.revokeObjectURL(this.previewUrl);
       }
       
       this.model = file;
       this.previewUrl = URL.createObjectURL(file);
-      this.addAssetFile(file);
       
+      await this.addAssetFile(file);
+      
+      this.setIsLoading(false);
       this.logStoreState();
     },
     
@@ -43,12 +61,13 @@ export const useModelStore = defineStore('model', {
       return this.model;
     },
     
-    addAssetFile(file: File): void {
+    async addAssetFile(file: File): Promise<void> {
+      console.log('Adding asset file:', file.name);
+
       const extension = file.name.split('.').pop()?.toLowerCase();
       const acceptedTypes = ['gltf', 'obj', 'bin', 'png', 'jpg', 'jpeg'];
       
       if (extension && acceptedTypes.includes(extension)) {
-        console.log('Adding asset file:', file.name);
         if (!this.assetFiles.find(f => f.name === file.name)) {
           this.assetFiles.push(file);
           const url = URL.createObjectURL(file);

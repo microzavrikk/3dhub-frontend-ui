@@ -9,12 +9,19 @@ import EmailVerificationModal from '../components/email-verification-modal/email
 import MainPage from '../pages/main-page/main-page.vue'
 import Home from '../pages/home-page/Home.vue'
 import Profile from '../pages/profile-page/profile.vue'
+import Catalog from '../pages/catalog-page/catalog.vue'
+
 
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: MainPage
+  },
+  {
+    path: '/catalog-page',
+    name: 'Catalog',
+    component: Catalog
   },
   {
     path: '/email-verification',
