@@ -75,7 +75,7 @@
       <div class="profile-info">
         <div class="profile-header">
           <h1 class="username">{{ username }}</h1>
-          <p class="email">{{ user?.email }}</p>
+          <span class="user-role" :class="user?.role.toLowerCase()">{{ user?.role }}</span>
         </div>
       </div>
 
@@ -511,6 +511,7 @@ onUnmounted(() => {
   position: relative;
   display: inline-block;
   margin-bottom: 30px;
+  margin-right: 20px;
 }
 
 .username::after {
@@ -523,9 +524,25 @@ onUnmounted(() => {
   background: linear-gradient(90deg, #ff4d4d, #4CAF50);
 }
 
-.email {
-  font-size: 18px;
-  color: #999;
+.user-role {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'Arial', sans-serif;
+}
+
+.user-role.admin {
+  background: linear-gradient(45deg, #ff4d4d, #ff8c00);
+  color: white;
+}
+
+.user-role.user {
+  background: linear-gradient(45deg, #4CAF50, #45b1e8);
+  color: white;
 }
 
 .profile-content {
