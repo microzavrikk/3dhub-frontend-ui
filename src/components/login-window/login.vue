@@ -76,7 +76,6 @@ const handleLogin = async () => {
       password: password.value,
       rememberMe: rememberMe.value
     });
-    console.log(response.data.Auth.login.accessToken);
     if (response.data.Auth.login.accessToken) {
       UserAuthService.setAuthToken(response.data.Auth.login.accessToken);
       UserAuthService.setUser(response.data.Auth.login.user);
