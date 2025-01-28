@@ -117,6 +117,7 @@ const router = useRouter();
 const username = computed(() => route.params.username as string);
 // @ts-ignore
 const fileInput = ref<HTMLInputElement | null>(null);
+// @ts-ignore
 const bannerInput = ref<HTMLInputElement | null>(null);
 const avatarUrl = ref<string | null>(null);
 const bannerUrl = ref<string | null>(null);
