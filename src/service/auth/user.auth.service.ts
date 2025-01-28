@@ -23,5 +23,10 @@ export class UserAuthService {
     static setUser(user: any) {
       localStorage.setItem('user', JSON.stringify(user))
     }
+
+    static logout() {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+    }
   }
   
