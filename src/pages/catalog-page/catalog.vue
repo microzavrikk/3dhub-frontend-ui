@@ -26,6 +26,7 @@
                 type="radio" 
                 v-model="priceFilter" 
                 value="free"
+                class="custom-radio"
               > Free
             </label>
             <label class="filter-option">
@@ -33,6 +34,7 @@
                 type="radio" 
                 v-model="priceFilter" 
                 value="under5"
+                class="custom-radio"
               > Under $5
             </label>
             <label class="filter-option">
@@ -40,6 +42,7 @@
                 type="radio" 
                 v-model="priceFilter" 
                 value="5to10"
+                class="custom-radio"
               > $5 - $10
             </label>
             <label class="filter-option">
@@ -47,6 +50,7 @@
                 type="radio" 
                 v-model="priceFilter" 
                 value="10to20"
+                class="custom-radio"
               > $10 - $20
             </label>
             <label class="filter-option">
@@ -54,6 +58,7 @@
                 type="radio" 
                 v-model="priceFilter" 
                 value="above20"
+                class="custom-radio"
               > Above $20
             </label>
           </div>
@@ -63,7 +68,7 @@
           <h3>Categories</h3>
           <div class="category-filters">
             <label 
-              v-for="category in categories" 
+              v-for="category in filteredCategories" 
               :key="category"
               class="filter-option"
             >
@@ -71,6 +76,7 @@
                 type="checkbox" 
                 v-model="selectedCategories" 
                 :value="category"
+                class="custom-checkbox"
               > {{ category }}
             </label>
           </div>
@@ -103,6 +109,7 @@
                 type="checkbox" 
                 v-model="selectedFormats" 
                 :value="format"
+                class="custom-checkbox"
               > {{ format }}
             </label>
           </div>
@@ -205,18 +212,7 @@ const selectedFormats = ref<string[]>([]);
 const loading = ref(true);
 const models = ref<any[]>([]);
 const sortBy = ref('newest');
-
-// Constants
-const categories = [
-  'Characters',
-  'Architecture', 
-  'Vehicles',
-  'Nature',
-  'Furniture',
-  'Animals',
-  'Sci-fi',
-  'Weapons'
-];
+const categories = ref<string[]>([]);
 
 const formats = ['GLTF', 'GLB', 'FBX', 'OBJ'];
 
@@ -230,6 +226,16 @@ const popularTags = [
   'Textured',
   'Modular'
 ];
+
+// Add this interface near the top of the script section
+interface CategoryResponse {
+  data: {
+    Category: {
+      getCategories: string[];
+      getAllCategoryInS3: string[];
+    }
+  }
+}
 
 // Methods
 const toggleTag = (tag: string) => {
@@ -255,6 +261,10 @@ const viewModel = (model: any) => {
 };
 
 // Computed
+const filteredCategories = computed(() => {
+  return categories.value.filter(category => /^[A-Z]/.test(category));
+});
+
 const filteredModels = computed(() => {
   return models.value.filter(model => {
     if (searchQuery.value && !model.name.toLowerCase().includes(searchQuery.value.toLowerCase())) {
@@ -265,13 +275,49 @@ const filteredModels = computed(() => {
   });
 });
 
+// Update the fetchCategories function
+const fetchCategories = async () => {
+  try {
+    const query = `
+      query {
+        Category {
+          getCategories
+          getAllCategoryInS3
+        }
+      }
+    `;
+
+    const response = await fetch('http://localhost:4000/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query })
+    });
+
+    const data = await response.json() as CategoryResponse;
+    categories.value = [...new Set([
+      ...(data.data.Category.getCategories || []),
+      ...(data.data.Category.getAllCategoryInS3 || [])
+    ])];
+  } catch (error) {
+    console.error('Failed to fetch categories:', error);
+  }
+};
+
 // Lifecycle
 onMounted(async () => {
   try {
-    const response = await fetch('http://localhost:4000/models');
-    models.value = await response.json();
+    await Promise.all([
+      fetchCategories(),
+      fetch('http://localhost:4000/models')
+        .then(res => res.json())
+        .then((data) => {
+          models.value = data as any[];
+        })
+    ]);
   } catch (error) {
-    console.error('Failed to fetch models:', error);
+    console.error('Failed to fetch data:', error);
   } finally {
     loading.value = false;
   }
@@ -281,17 +327,20 @@ onMounted(async () => {
 <style scoped>
 .catalog-page {
   min-height: 100vh;
-  background: #FFFFFF;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  font-family: 'Poppins', sans-serif;
+  color: #fff;
 }
 
 .header {
-  background: #FFFFFF;
-  border-bottom: 1px solid #F0F0F0;
+  background: rgba(40, 40, 40, 0.8);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   padding: 1.25rem 2.5rem;
   position: sticky;
   top: 0;
   z-index: 10;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 .search-section {
@@ -306,18 +355,18 @@ onMounted(async () => {
 .search-input {
   width: 100%;
   padding: 1.2rem 3.5rem 1.2rem 1.8rem;
-  border: 2px solid #F0F0F0;
-  border-radius: 16px;
+  border: 2px solid rgba(76, 175, 80, 0.3);
+  border-radius: 12px;
   font-size: 1.1rem;
-  transition: all 0.2s ease;
-  background: #FFFFFF;
-  color: #333333;
+  transition: all 0.3s ease;
+  background: rgba(40, 40, 40, 0.7);
+  color: #fff;
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #666666;
-  box-shadow: 0 0 0 4px rgba(102, 102, 102, 0.1);
+  border-color: #4CAF50;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.2);
 }
 
 .search-icon {
@@ -325,7 +374,7 @@ onMounted(async () => {
   right: 1.2rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #666666;
+  color: #4CAF50;
 }
 
 .catalog-container {
@@ -338,12 +387,13 @@ onMounted(async () => {
 }
 
 .filters-section {
-  background: #FFFFFF;
+  background: rgba(26, 26, 26, 0.95);
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  border: 2px solid rgba(76, 175, 80, 0.2);
   height: fit-content;
-  border: 1px solid #F0F0F0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
 }
 
 .filter-group {
@@ -352,10 +402,11 @@ onMounted(async () => {
 
 .filter-group h3 {
   font-size: 1.2rem;
-  color: #333333;
+  color: #4CAF50;
   margin-bottom: 1.2rem;
   font-weight: 600;
-  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .filter-option {
@@ -364,13 +415,72 @@ onMounted(async () => {
   gap: 0.8rem;
   margin-bottom: 0.8rem;
   cursor: pointer;
-  color: #666666;
+  color: #bbb;
   transition: color 0.2s ease;
   font-size: 1rem;
 }
 
 .filter-option:hover {
-  color: #333333;
+  color: #4CAF50;
+  transform: translateX(5px);
+  transition: all 0.3s ease;
+}
+
+/* Custom checkbox styles */
+.custom-checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(76, 175, 80, 0.5);
+  border-radius: 6px;
+  background: rgba(26, 26, 26, 0.95);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.custom-checkbox:checked {
+  background: #4CAF50;
+  border-color: #4CAF50;
+}
+
+.custom-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  color: white;
+  font-size: 14px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Custom radio styles */
+.custom-radio {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(76, 175, 80, 0.5);
+  border-radius: 50%;
+  background: rgba(26, 26, 26, 0.95);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.custom-radio:checked {
+  border-color: #4CAF50;
+}
+
+.custom-radio:checked::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #4CAF50;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .tags-container {
@@ -381,43 +491,47 @@ onMounted(async () => {
 
 .tag {
   padding: 0.6rem 1.2rem;
-  background: #FAFAFA;
-  border-radius: 24px;
+  background: rgba(51, 51, 51, 0.8);
+  border-radius: 12px;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  color: #666666;
-  border: 1px solid #F0F0F0;
+  transition: all 0.3s ease;
+  color: #fff;
+  border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .tag:hover {
-  background: #F0F0F0;
-  color: #333333;
-  border-color: #666666;
+  background: rgba(76, 175, 80, 0.2);
+  border-color: #4CAF50;
+  transform: translateY(-2px);
 }
 
 .tag.active {
-  background: #666666;
+  background: #4CAF50;
   color: white;
-  border-color: #666666;
+  border-color: #4CAF50;
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
 }
 
 .clear-filters {
   width: 100%;
   padding: 1rem;
-  background: #999999;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
   color: white;
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 500;
+  transition: all 0.3s ease;
+  font-weight: 700;
   font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .clear-filters:hover {
-  background: #666666;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
 }
 
 .section-header {
@@ -428,25 +542,27 @@ onMounted(async () => {
 }
 
 .section-header h2 {
-  font-size: 1.8rem;
-  color: #333333;
-  font-weight: 600;
-  letter-spacing: 0.3px;
+  font-size: 2rem;
+  color: #4CAF50;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .sort-select {
   padding: 0.8rem 1.5rem;
-  border: 1px solid #F0F0F0;
+  border: 2px solid rgba(76, 175, 80, 0.3);
   border-radius: 12px;
-  background: #FFFFFF;
-  color: #666666;
+  background: rgba(26, 26, 26, 0.95);
+  color: #fff;
   cursor: pointer;
   font-size: 1rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .sort-select:hover {
-  border-color: #666666;
+  border-color: #4CAF50;
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.2);
 }
 
 .models-grid {
@@ -460,42 +576,45 @@ onMounted(async () => {
 }
 
 .model-card {
-  background: #FFFFFF;
+  background: rgba(26, 26, 26, 0.95);
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  transition: all 0.2s ease;
-  border: 1px solid #F0F0F0;
+  border: 2px solid rgba(76, 175, 80, 0.2);
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .model-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
-  border-color: #666666;
+  transform: translateY(-8px);
+  border-color: #4CAF50;
+  box-shadow: 0 12px 40px rgba(76, 175, 80, 0.2);
 }
 
 .model-preview {
   height: 280px;
-  background: #FAFAFA;
+  background: #222;
+  position: relative;
+  overflow: hidden;
 }
 
 .model-info {
   padding: 1.8rem;
+  background: linear-gradient(180deg, rgba(26, 26, 26, 0.95) 0%, rgba(26, 26, 26, 0.98) 100%);
 }
 
 .model-info h3 {
   margin: 0;
-  font-size: 1.3rem;
-  color: #333333;
+  font-size: 1.4rem;
+  color: #fff;
   font-weight: 600;
-  letter-spacing: 0.3px;
 }
 
 .model-author {
-  color: #666666;
+  color: #4CAF50;
   font-size: 1rem;
   margin: 0.8rem 0;
+  font-weight: 500;
 }
 
 .model-tags {
@@ -506,11 +625,11 @@ onMounted(async () => {
 
 .model-tag {
   padding: 0.4rem 1rem;
-  background: #FAFAFA;
-  border-radius: 16px;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 8px;
   font-size: 0.9rem;
-  color: #666666;
-  border: 1px solid #F0F0F0;
+  color: #4CAF50;
+  border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .model-footer {
@@ -521,9 +640,9 @@ onMounted(async () => {
 }
 
 .model-price {
-  font-weight: 600;
-  color: #333333;
-  font-size: 1.2rem;
+  font-weight: 700;
+  color: #4CAF50;
+  font-size: 1.3rem;
 }
 
 .download-btn {
@@ -531,19 +650,22 @@ onMounted(async () => {
   align-items: center;
   gap: 0.6rem;
   padding: 0.8rem 1.5rem;
-  background: #666666;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
   color: white;
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 500;
+  transition: all 0.3s ease;
+  font-weight: 600;
   font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .download-btn:hover {
-  background: #333333;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
 }
 
 .loading,
@@ -553,33 +675,37 @@ onMounted(async () => {
   justify-content: center;
   align-items: center;
   height: 300px;
-  color: #666666;
+  color: #4CAF50;
   gap: 1.2rem;
 }
 
 .loader {
   width: 48px;
   height: 48px;
-  border: 3px solid #F0F0F0;
-  border-top-color: #666666;
+  border: 3px solid rgba(76, 175, 80, 0.3);
+  border-top-color: #4CAF50;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 .reset-search {
   padding: 0.8rem 1.5rem;
-  background: #666666;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
   color: white;
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
 }
 
 .reset-search:hover {
-  background: #333333;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
 }
 
 @keyframes spin {
