@@ -83,7 +83,7 @@
         <h2>My Models</h2>
         <div class="models-grid">
           <div v-if="hasModels" class="model-cards">
-            <div v-for="model in groupedModels" :key="model.titleName" class="model-card">
+            <div v-for="model in filteredModels" :key="model.titleName" class="model-card">
               <Suspense>
                 <template #default>
                   <AsyncModelLoader :model="model" />
@@ -162,6 +162,10 @@ const groupedModels = computed(() => {
   console.log("models", models);
   
   return Array.from(models.values());
+});
+
+const filteredModels = computed(() => {
+  return groupedModels.value.filter(model => model.titleName !== username.value);
 });
 
 const loadModelFiles = async (model: any) => {
@@ -318,8 +322,12 @@ const AsyncModelLoader = defineComponent({
     if (!modelFile) {
       return () => h('div', 'Failed to load model');
     }
+    console.log("modelFile", modelFile);
+    
     return () => h(ThreeDScene, { 
       modelFile,
+      width: '400px',
+      height: '300px',
       class: 'model-preview'
     });
   }
