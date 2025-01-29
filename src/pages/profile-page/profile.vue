@@ -114,6 +114,7 @@ import { useModelStore } from '../../stores/modelStore';
 
 const route = useRoute();
 const router = useRouter();
+const modelStore = useModelStore();
 const username = computed(() => route.params.username as string);
 // @ts-ignore
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -123,7 +124,6 @@ const avatarUrl = ref<string | null>(null);
 const bannerUrl = ref<string | null>(null);
 const userAssets = ref<any[]>([]);
 const modelFiles = ref(new Map());
-const modelStores = ref(new Map());
 
 const user = computed(() => {
   const userData = UserAuthService.getUser();
@@ -152,15 +152,10 @@ const groupedModels = computed(() => {
           category: asset.category,
           files: []
         });
-        if (!modelStores.value.has(asset.titleName)) {
-          modelStores.value.set(asset.titleName, useModelStore());
-        }
       }
       models.get(asset.titleName).files.push(asset);
     }
   });
-
-  console.log("models", models);
   
   return Array.from(models.values());
 });
@@ -170,55 +165,58 @@ const filteredModels = computed(() => {
 });
 
 const loadModelFiles = async (model: any) => {
-  const store = modelStores.value.get(model.titleName);
-  if (!store) return null;
-
-  // If files already loaded, return main model
-  if (modelFiles.value.has(model.titleName)) {
-    return modelFiles.value.get(model.titleName);
-  }
+  console.log("model", model);
+  if (!modelStore) return null;
 
   try {
-    // Find first model file
-    const mainModelFile = model.files[0];
-    if (!mainModelFile) {
-      console.error('No model files found');
+    // Find .gltf and .bin files
+    const gltfFile = model.files.find((file: any) => file.name.endsWith('.gltf'));
+    const binFile = model.files.find((file: any) => file.name.endsWith('.bin'));
+
+    if (!gltfFile || !binFile) {
+      console.error('Missing required model files');
       return null;
     }
 
-    // Create File object from the main model URL
-    const mainResponse = await fetch(mainModelFile.downloadUrl[0]);
-    const mainBlob = await mainResponse.blob();
-    console.log(`Main file ${mainModelFile.name} size:`, mainBlob.size);
-    const mainFile = new File([mainBlob], mainModelFile.name, { 
-      type: mainModelFile.name.endsWith('.gltf') ? 'model/gltf+json' : 'application/octet-stream'
+    // Load .gltf file
+    const gltfResponse = await fetch(gltfFile.downloadUrl[0]);
+    const gltfBlob = await gltfResponse.blob();
+    console.log(`GLTF file ${gltfFile.name} size:`, gltfBlob.size);
+    const gltfModelFile = new File([gltfBlob], gltfFile.name, { 
+      type: 'model/gltf+json'
     });
 
-    // Clear store before adding new files
-    store.clearModel();
+    // Load .bin file
+    const binResponse = await fetch(binFile.downloadUrl[0]);
+    const binBlob = await binResponse.blob();
+    console.log(`BIN file ${binFile.name} size:`, binBlob.size);
+    const binModelFile = new File([binBlob], binFile.name, {
+      type: 'application/octet-stream'
+    });
+
+    // Set main .gltf file
+    await modelStore.setModel(gltfModelFile);
     
-    // Set main model file first
-    await store.setModel(mainFile);
-    
-    // Load all associated files
+    // Add .bin file as asset
+    await modelStore.addAssetFile(binModelFile);
+
+    // Load remaining asset files (textures etc)
     await Promise.all(
       model.files.map(async (file: any) => {
-        if (file.name !== mainModelFile.name) {
+        if (file.name !== gltfFile.name && file.name !== binFile.name) {
           const response = await fetch(file.downloadUrl[0]);
           const blob = await response.blob();
           console.log(`Asset file ${file.name} size:`, blob.size);
           const assetFile = new File([blob], file.name, { 
-            type: file.name.endsWith('.bin') ? 'application/octet-stream' : 'image/*'
+            type: 'image/*'
           });
-          await store.addAssetFile(assetFile);
+          await modelStore.addAssetFile(assetFile);
         }
       })
     );
 
-    // Cache main file
-    modelFiles.value.set(model.titleName, mainFile);
-    
-    return mainFile;
+    // Return only the GLTF file
+    return gltfModelFile;
   } catch (error) {
     console.error('Failed to load model files:', error);
     return null;
@@ -296,9 +294,29 @@ const loadBanner = async () => {
 
 const loadUserAssets = async () => {
   try {
-    const response = await axios.get(`http://localhost:4000/assets-storage/assets/user/${user.value?.username}`);
-    console.log("User assets:", response.data);
-    userAssets.value = response.data;
+    const response = await axios.get(`http://localhost:4000/assets-storage/assets/user/${user.value?.username}`);    
+    const filteredAssets = response.data.filter((asset: any) => asset.titleName !== username.value);
+
+    console.log("filteredAssets", filteredAssets);
+    
+    for (const asset of filteredAssets) {
+      console.log("asset", asset);
+      try {
+        const binaryResponse = await axios.get(asset.downloadUrl[0], {
+          responseType: 'arraybuffer'
+        });
+        console.log("binaryResponse", binaryResponse);
+        
+        // Convert buffer to text
+        const textDecoder = new TextDecoder();
+        const fileContent = textDecoder.decode(binaryResponse.data);        
+        asset.downloadUrl[0] = URL.createObjectURL(new Blob([binaryResponse.data]));
+        console.log(`Created blob URL for ${asset.fileName}:`, asset.downloadUrl[0]);
+      } catch (error) {
+        console.error(`Failed to load binary content for ${asset.fileName}:`, error);
+      }
+    }
+    userAssets.value = filteredAssets;
   } catch (error) {
     console.error('Failed to load user assets:', error);
     userAssets.value = [];
@@ -319,14 +337,15 @@ const AsyncModelLoader = defineComponent({
     }
   },
   async setup(props) {
+    console.log("props.model", props.model);
     const modelFile = await loadModelFiles(props.model);
     if (!modelFile) {
       return () => h('div', 'Failed to load model');
     }
     console.log("modelFile", modelFile);
-    
+
     return () => h(ThreeDScene, { 
-      modelFile,
+      modelFile: modelFile,
       width: '400px',
       height: '300px',
       class: 'model-preview'
@@ -337,316 +356,9 @@ const AsyncModelLoader = defineComponent({
 // Clean up resources on unmount
 onUnmounted(() => {
   modelFiles.value.clear();
-  modelStores.value.forEach(store => store.clearModel());
-  modelStores.value.clear();
 });
 </script>
 
 <style scoped>
-.profile-page {
-  min-height: 100vh;
-  background: #0a0a0a;
-  color: #fff;
-  font-family: 'Poppins', sans-serif;
-}
-
-.profile-banner {
-  position: relative;
-  height: 300px;
-  background: #111111;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-  overflow: hidden;
-}
-
-.banner-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.banner-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.8));
-  z-index: 1;
-}
-
-.banner-upload {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-}
-
-.change-banner-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(40, 40, 40, 0.8);
-  color: #4CAF50;
-  border: 2px solid #4CAF50;
-  padding: 12px 24px;
-  border-radius: 30px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.change-banner-btn:hover {
-  background: #4CAF50;
-  color: white;
-  transform: scale(1.05);
-}
-
-.banner-buttons {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 20px;
-  z-index: 1000;
-  background: rgba(40, 40, 40, 0.5);
-  padding: 10px 20px;
-  border-radius: 30px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.nav-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 700;
-  transition: all 0.3s ease;
-  font-size: 14px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-.nav-btn:hover {
-  color: #4CAF50;
-  transform: translateY(-2px);
-}
-
-.logout-btn {
-  color: #ff4d4d;
-}
-
-.logout-btn:hover {
-  color: #ff6b6b;
-}
-
-.profile-main {
-  max-width: 1200px;
-  margin: -80px auto 0;
-  padding: 0 20px;
-  position: relative;
-  z-index: 1;
-}
-
-.profile-avatar-wrapper {
-  margin-bottom: 30px;
-}
-
-.profile-avatar {
-  width: 160px;
-  height: 160px;
-  background: #1a1a1a;
-  border-radius: 15px;
-  border: 1px solid #333;
-  overflow: hidden;
-  position: relative;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-}
-
-.avatar-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.default-avatar {
-  width: 100%;
-  height: 100%;
-  padding: 2rem;
-  color: #4CAF50;
-}
-
-.change-avatar-btn {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background: rgba(40, 40, 40, 0.8);
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: #4CAF50;
-}
-
-.change-avatar-btn:hover {
-  background: #4CAF50;
-  color: white;
-  transform: scale(1.1);
-}
-
-.profile-info {
-  margin-bottom: 60px;
-}
-
-.username {
-  font-size: 48px;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: 700;
-  position: relative;
-  display: inline-block;
-  margin-bottom: 30px;
-  margin-right: 20px;
-}
-
-.username::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, #ff4d4d, #4CAF50);
-}
-
-.user-role {
-  display: inline-block;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 16px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-family: 'Arial', sans-serif;
-}
-
-.user-role.admin {
-  background: linear-gradient(45deg, #ff4d4d, #ff8c00);
-  color: white;
-}
-
-.user-role.user {
-  background: linear-gradient(45deg, #4CAF50, #45b1e8);
-  color: white;
-}
-
-.profile-content {
-  padding: 40px;
-  background: #111111;
-  border-radius: 15px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-  margin-bottom: 60px;
-}
-
-.profile-content h2 {
-  color: #4CAF50;
-  font-size: 32px;
-  margin-bottom: 40px;
-  text-transform: uppercase;
-  text-align: center;
-}
-
-.models-grid {
-  min-height: 200px;
-}
-
-.model-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-  padding: 20px;
-}
-
-.model-card {
-  background: #1a1a1a;
-  padding: 30px;
-  border-radius: 15px;
-  border: 1px solid #333;
-  transition: transform 0.3s ease;
-}
-
-.model-card:hover {
-  transform: translateY(-10px);
-  border-color: #4CAF50;
-}
-
-.model-title {
-  color: #fff;
-  font-size: 20px;
-  font-weight: 600;
-  margin: 15px 0;
-}
-
-.model-category {
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-size: 12px;
-  background: #4CAF50;
-  color: #fff;
-}
-
-.loading-placeholder {
-  height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #1a1a1a;
-  border-radius: 15px;
-  color: #999;
-  font-size: 16px;
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
-}
-
-.file-input {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .profile-banner {
-    height: 200px;
-  }
-  
-  .username {
-    font-size: 36px;
-  }
-  
-  .profile-content {
-    padding: 20px;
-  }
-  
-  .model-cards {
-    grid-template-columns: 1fr;
-  }
-}
-</style>    
+@import './profile.css';
+</style>

@@ -30,6 +30,8 @@ export const useModelStore = defineStore('model', {
     })
   },
 
+
+
   actions: {
     setLoadingProgress(progress: number) {
       this.loadingProgress = progress;
@@ -47,7 +49,9 @@ export const useModelStore = defineStore('model', {
       if (this.previewUrl) {
         URL.revokeObjectURL(this.previewUrl);
       }
-      
+
+      console.log("file", file);
+            
       this.model = file;
       this.previewUrl = URL.createObjectURL(file);
       
@@ -95,7 +99,13 @@ export const useModelStore = defineStore('model', {
     },
 
     getAssetFiles(): File[] {
-      return this.assetFiles;
+      if(this.assetFiles.length > 0) {
+        return this.assetFiles;
+      }
+      else {
+        console.log("No asset files found");
+      }
+      return [];
     },
     
     getAssetUrl(fileName: string): string | undefined {

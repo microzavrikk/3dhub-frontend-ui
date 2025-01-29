@@ -254,9 +254,15 @@ const loadModel = async (file: File) => {
 onMounted(() => {
   init();
   window.addEventListener('resize', handleResize);
+
+  console.log("props ALL in 3d-scene", props);
   
   if (props.modelFile) {
     loadModel(props.modelFile);
+    console.log(props.modelFile);
+    console.log("modelStore in 3d-scene", modelStore);
+    console.log('Current asset files info:', modelStore.getAssetFiles());
+    console.log('Current asset files:', modelStore.assetFiles);
   }
 });
 
