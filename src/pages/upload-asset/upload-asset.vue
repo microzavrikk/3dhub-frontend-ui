@@ -102,6 +102,7 @@ export default {
       isDragging: false,
       selectedFiles: [],
       modelFile: null,
+      assetFiles: [], // Added assetFiles array
       acceptedModelTypes: ['.gltf', '.obj'],
       acceptedAssetTypes: ['.bin', '.png', '.jpg', '.jpeg']
     };
@@ -139,20 +140,21 @@ export default {
       files.forEach(file => {
         const extension = '.' + file.name.split('.').pop().toLowerCase();
         
-        // Проверяем, является ли файл основной моделью
+        // Check if file is main model
         if (this.acceptedModelTypes.includes(extension)) {
           this.modelFile = file;
           this.modelStore.setModel(file);
         }
         
-        // Проверяем, является ли файл допустимым ассетом
+        // Check if file is valid asset
         if (this.acceptedModelTypes.includes(extension) || 
             this.acceptedAssetTypes.includes(extension)) {
           if (!this.selectedFiles.find(f => f.name === file.name)) {
             this.selectedFiles.push(file);
             
-            // Если это не основной файл модели, добавляем его как ассет
+            // If not main model file, add as asset
             if (!this.acceptedModelTypes.includes(extension)) {
+              this.assetFiles.push(file); // Add to assetFiles array
               this.modelStore.addAssetFile(file);
             }
           }
@@ -171,13 +173,14 @@ export default {
       
       const extension = '.' + file.name.split('.').pop().toLowerCase();
       
-      // Если удаляем основной файл модели
+      // If removing main model file
       if (this.acceptedModelTypes.includes(extension) && file === this.modelFile) {
         this.modelFile = null;
         this.modelStore.clearModel();
       } 
-      // Если удаляем ассет
+      // If removing asset file
       else if (this.acceptedAssetTypes.includes(extension)) {
+        this.assetFiles = this.assetFiles.filter(f => f !== file); // Remove from assetFiles
         this.modelStore.removeAssetFile(file);
       }
     },
@@ -185,6 +188,7 @@ export default {
     handleCancel() {
       this.selectedFiles = [];
       this.modelFile = null;
+      this.assetFiles = []; // Clear assetFiles
       this.modelStore.clearModel();
       this.$emit('cancel');
     },
@@ -194,6 +198,7 @@ export default {
         alert('Please select a 3D model file (.gltf or .obj)');
         return;
       }
+      console.log("store", this.modelStore);
       this.router.push('/upload-info-asset');
     },
 
@@ -215,258 +220,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.upload-container {
-  min-height: 100vh;
-  background: #0a0a0a;
-  color: #fff;
-  font-family: 'Poppins', sans-serif;
-  padding: 3rem;
-}
-
-h2 {
-  font-size: 48px;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: 700;
-  position: relative;
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-h2::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100px;
-  height: 4px;
-  background: linear-gradient(90deg, #4CAF50, #66BB6A);
-}
-
-.upload-subtitle {
-  text-align: center;
-  color: #999;
-  margin-bottom: 3rem;
-  font-size: 1.1rem;
-}
-
-.upload-sections {
-  padding: 2rem;
-  background: #111111;
-  border-radius: 15px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.drop-zone {
-  border: 2px dashed #333;
-  border-radius: 15px;
-  padding: 2rem;
-  background: #1a1a1a;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.drop-zone:hover {
-  border-color: #4CAF50;
-  transform: translateY(-2px);
-}
-
-.drop-zone--active {
-  border-color: #4CAF50;
-  background: rgba(76, 175, 80, 0.1);
-}
-
-.drop-zone__empty {
-  padding: 3rem;
-  text-align: center;
-}
-
-.upload-icon-wrapper {
-  background: rgba(76, 175, 80, 0.1);
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-}
-
-.upload-icon {
-  color: #4CAF50;
-}
-
-.drop-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #fff;
-}
-
-.drop-subtitle {
-  color: #999;
-  margin-bottom: 1.5rem;
-}
-
-.format-tag {
-  background: rgba(76, 175, 80, 0.1);
-  color: #4CAF50;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  margin: 0 0.25rem;
-}
-
-.files-preview {
-  background: #1a1a1a;
-  border-radius: 15px;
-  border: 1px solid #333;
-}
-
-.files-preview__header {
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid #333;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.files-count {
-  color: #999;
-}
-
-.selected-files {
-  max-height: 300px;
-  overflow-y: auto;
-  padding: 1rem;
-}
-
-.selected-file {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
-  border-bottom: 1px solid #333;
-  transition: all 0.3s ease;
-}
-
-.selected-file:hover {
-  background: rgba(76, 175, 80, 0.1);
-}
-
-.selected-file--primary {
-  background: rgba(76, 175, 80, 0.1);
-  border-left: 3px solid #4CAF50;
-}
-
-.file-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.file-icon {
-  color: #4CAF50;
-}
-
-.file-details {
-  display: flex;
-  flex-direction: column;
-}
-
-.file-name {
-  color: #fff;
-  font-weight: 500;
-}
-
-.file-size {
-  color: #999;
-  font-size: 0.9rem;
-}
-
-.remove-btn {
-  background: transparent;
-  border: none;
-  color: #999;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.remove-btn:hover {
-  color: #ff4d4d;
-}
-
-.actions {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 2rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.action-btn.upload {
-  background: #4CAF50;
-  color: white;
-  border: none;
-  box-shadow: 0 10px 20px rgba(76, 175, 80, 0.2);
-}
-
-.action-btn.upload:hover {
-  background: #66BB6A;
-  transform: translateY(-2px);
-  box-shadow: 0 15px 30px rgba(76, 175, 80, 0.3);
-}
-
-.action-btn.cancel {
-  background: transparent;
-  border: 1px solid #333;
-  color: #999;
-}
-
-.action-btn.cancel:hover {
-  border-color: #ff4d4d;
-  color: #ff4d4d;
-  transform: translateY(-2px);
-}
-
-.file-input {
-  display: none;
-}
-
-/* Scrollbar Styling */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #1a1a1a;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #4CAF50;
-}
-</style>
+<style src="./upload-asset.css" scoped></style>
