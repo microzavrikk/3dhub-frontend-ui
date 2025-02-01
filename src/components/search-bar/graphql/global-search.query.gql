@@ -1,0 +1,12 @@
+query GlobalSearch($query: String!) {
+  GlobalSearch {
+    search(query: $query) {
+      users {
+        username
+        avatarUrl
+      }
+      modelsCount
+      executionTime
+    }
+  }
+}

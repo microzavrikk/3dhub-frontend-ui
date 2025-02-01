@@ -3,8 +3,8 @@
     <div class="profile-banner">
       <div class="banner-overlay"></div>
       <img 
-        v-if="bannerUrl" 
-        :src="bannerUrl" 
+        v-if="profile?.backgroundUrl" 
+        :src="profile.backgroundUrl" 
         alt="Profile banner"
         class="banner-image"
       >
@@ -43,8 +43,8 @@
       <div class="profile-avatar-wrapper">
         <div class="profile-avatar">
           <img 
-            v-if="avatarUrl" 
-            :src="avatarUrl" 
+            v-if="profile?.avatarUrl" 
+            :src="profile.avatarUrl" 
             alt="User avatar"
             class="avatar-image"
           >
@@ -111,6 +111,8 @@ import axios from 'axios';
 import ThreeDScene from '../../components/3d-scene/3d-scene.vue';
 import { defineComponent, h } from 'vue';
 import { useModelStore } from '../../stores/modelStore';
+import { useQuery } from '@vue/apollo-composable';
+import { GetProfileDocument } from '../../types';
 
 const route = useRoute();
 const router = useRouter();
@@ -120,8 +122,6 @@ const username = computed(() => route.params.username as string);
 const fileInput = ref<HTMLInputElement | null>(null);
 // @ts-ignore
 const bannerInput = ref<HTMLInputElement | null>(null);
-const avatarUrl = ref<string | null>(null);
-const bannerUrl = ref<string | null>(null);
 const userAssets = ref<any[]>([]);
 const modelFiles = ref(new Map());
 
@@ -129,6 +129,12 @@ const user = computed(() => {
   const userData = UserAuthService.getUser();
   return userData ? JSON.parse(userData) : null;
 });
+
+const { result } = useQuery(GetProfileDocument, {
+  userId: user.value?.id
+});
+
+const profile = computed(() => result.value?.getProfile);
 
 const isCurrentUser = computed(() => {
   return user.value?.username === username.value;
@@ -239,9 +245,6 @@ const handleFileChange = async (event: Event) => {
         'Content-Type': 'multipart/form-data'
       }
     });
-    
-    // Refresh avatar
-    loadAvatar();
   } catch (error) {
     console.error('Failed to upload avatar:', error);
   }
@@ -263,32 +266,8 @@ const handleBannerChange = async (event: Event) => {
         'Content-Type': 'multipart/form-data'
       }
     });
-    
-    // Refresh banner
-    loadBanner();
   } catch (error) {
     console.error('Failed to upload banner:', error);
-  }
-};
-
-const loadAvatar = async () => {
-  try {
-    const response = await axios.get(`http://localhost:4000/user-avatar/get-avatar/${username.value}`);
-    console.log("response.data", response.data);
-    avatarUrl.value = response.data;
-  } catch (error) {
-    console.error('Failed to load avatar:', error);
-    avatarUrl.value = null;
-  }
-};
-
-const loadBanner = async () => {
-  try {
-    const response = await axios.get(`http://localhost:4000/user-avatar/banner/${username.value}`);
-    bannerUrl.value = response.data;
-  } catch (error) {
-    console.error('Failed to load banner:', error);
-    bannerUrl.value = null;
   }
 };
 
@@ -324,8 +303,6 @@ const loadUserAssets = async () => {
 };
 
 onMounted(() => {
-  loadAvatar();
-  loadBanner();
   loadUserAssets();
 });
 

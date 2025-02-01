@@ -21,17 +21,64 @@
         </svg>
       </button>
     </div>
+
+    <!-- Search Results -->
+    <div v-if="searchQuery && result?.GlobalSearch?.search" class="search-results">
+      <!-- Models count -->
+      <div class="models-count">
+        {{ result.GlobalSearch.search.modelsCount }} models
+        <span class="execution-time">{{ result.GlobalSearch.search.executionTime }}ms</span>
+      </div>
+      
+      <div class="divider"></div>
+
+      <!-- Users list -->
+      <div class="users-list">
+        <div v-for="user in result.GlobalSearch.search.users" 
+             :key="user.username"
+             class="user-item">
+          <img 
+            :src="user.avatarUrl || 'https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper.png'" 
+            :alt="user.username"
+            class="user-avatar"
+          >
+          <span class="username">{{ user.username }}</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useGlobalSearchQuery } from '../../types';
+import { watch } from 'vue';
 
 const searchQuery = ref('');
 
-const handleSearch = () => {
-  // TODO: Implement search logic
-  console.log('Searching for:', searchQuery.value);
+const { result, loading, refetch } = useGlobalSearchQuery(
+  { query: searchQuery.value },
+  { fetchPolicy: 'no-cache' } // Отключаем кэширование
+);
+
+let searchTimeout: NodeJS.Timeout;
+
+const handleSearch = async () => {
+  // Очищаем предыдущий таймаут если он есть
+  if (searchTimeout) {
+    clearTimeout(searchTimeout);
+  }
+
+  // Устанавливаем новый таймаут
+  searchTimeout = setTimeout(async () => {
+    if (searchQuery.value.length >= 3) {
+      try {
+        await refetch({ query: searchQuery.value });
+      } catch (error) {
+        console.error('Search error:', error);
+      }
+    }
+  }, 300); // Задержка 300мс
 };
 
 const clearSearch = () => {
@@ -41,59 +88,74 @@ const clearSearch = () => {
 
 <style scoped>
 .search-container {
-  width: 100%;
-}
-
-.search-box {
   position: relative;
   width: 100%;
-  display: flex;
-  align-items: center;
-  background: rgba(30, 30, 30, 0.5);
+}
+
+.search-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  background: rgba(30, 30, 30, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 25px;
-  padding: 8px 16px;
-  transition: all 0.3s ease;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
 }
 
-.search-box:focus-within {
-  background: rgba(40, 40, 40, 0.8);
-  border-color: #4CAF50;
-  box-shadow: 0 0 10px rgba(76, 175, 80, 0.2);
-}
-
-.search-icon {
-  color: #666;
-  margin-right: 8px;
-}
-
-.search-input {
-  flex: 1;
-  background: transparent;
-  border: none;
+.models-count {
   color: #fff;
-  font-size: 16px;
-  outline: none;
-  padding: 4px 0;
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.search-input::placeholder {
+.execution-time {
   color: #666;
+  font-size: 12px;
 }
 
-.clear-button {
-  background: transparent;
-  border: none;
-  color: #666;
-  cursor: pointer;
-  padding: 4px;
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 8px 0;
+}
+
+.users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: color 0.3s ease;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+  cursor: pointer;
 }
 
-.clear-button:hover {
+.user-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.username {
   color: #fff;
+  font-size: 14px;
 }
 </style>
+
+<style src="./search-bar.css" />

@@ -16,28 +16,24 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  DateTime: { input: any; output: any; }
   JSON: { input: any; output: any; }
   Upload: { input: any; output: any; }
 };
 
 export type Asset = {
   __typename?: 'Asset';
-  bucketName: Scalars['String']['output'];
   category: Scalars['String']['output'];
+  createdAt?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   file: Scalars['Upload']['output'];
-  fileKey: Scalars['String']['output'];
-  fileSize: Scalars['Int']['output'];
-  fileType: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  metadata?: Maybe<Scalars['JSON']['output']>;
   name: Scalars['String']['output'];
   ownerId: Scalars['String']['output'];
-  publicAccess: Scalars['Boolean']['output'];
+  publicAccess?: Maybe<Scalars['Boolean']['output']>;
   tags: Array<Scalars['String']['output']>;
-  thumbnailUrl?: Maybe<Scalars['String']['output']>;
-  updatedAt: Scalars['String']['output'];
-  uploadDate: Scalars['String']['output'];
+  titleName: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['String']['output']>;
 };
 
 export type AssetsStorageMutation = {
@@ -113,19 +109,14 @@ export type CategoryQuery = {
 };
 
 export type CreateAssetInput = {
-  bucketName: Scalars['String']['input'];
   category: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   file: Scalars['Upload']['input'];
-  fileKey: Scalars['String']['input'];
-  fileSize: Scalars['Int']['input'];
-  fileType: Scalars['String']['input'];
-  metadata?: InputMaybe<Scalars['JSON']['input']>;
   name: Scalars['String']['input'];
   ownerId: Scalars['String']['input'];
   publicAccess?: InputMaybe<Scalars['Boolean']['input']>;
   tags: Array<Scalars['String']['input']>;
-  thumbnailUrl?: InputMaybe<Scalars['String']['input']>;
+  titleName: Scalars['String']['input'];
 };
 
 export type FileOutput = {
@@ -144,12 +135,33 @@ export type GetFileByUserIdDto = {
   userId: Scalars['String']['input'];
 };
 
+export type GlobalSearchQuery = {
+  __typename?: 'GlobalSearchQuery';
+  search: GlobalSearchResult;
+};
+
+
+export type GlobalSearchQuerySearchArgs = {
+  query: Scalars['String']['input'];
+};
+
+export type GlobalSearchResult = {
+  __typename?: 'GlobalSearchResult';
+  executionTime: Scalars['Int']['output'];
+  modelsCount: Scalars['Int']['output'];
+  users: Array<UserSearchResult>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   AssetsMutation?: Maybe<AssetsStorageMutation>;
   Auth?: Maybe<AuthMutation>;
+  SetRoles?: Maybe<SetRolesMutation>;
   createPost: Post;
   createUser: User;
+  deleteProfile: Scalars['Boolean']['output'];
+  setAvatarUrl: Profile;
+  updateProfile: Profile;
 };
 
 
@@ -165,6 +177,23 @@ export type MutationCreateUserArgs = {
   name: Scalars['String']['input'];
 };
 
+
+export type MutationDeleteProfileArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
+export type MutationSetAvatarUrlArgs = {
+  avatarUrl: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateProfileArgs = {
+  profile: ProfileInput;
+  userId: Scalars['String']['input'];
+};
+
 export type PingQuery = {
   __typename?: 'PingQuery';
   ping: Scalars['String']['output'];
@@ -178,14 +207,40 @@ export type Post = {
   title: Scalars['String']['output'];
 };
 
+export type Profile = {
+  __typename?: 'Profile';
+  avatarUrl?: Maybe<Scalars['String']['output']>;
+  backgroundUrl?: Maybe<Scalars['String']['output']>;
+  bio?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  socialLinks?: Maybe<Scalars['JSON']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  userId: Scalars['String']['output'];
+};
+
+export type ProfileInput = {
+  avatarUrl?: InputMaybe<Scalars['String']['input']>;
+  backgroundUrl?: InputMaybe<Scalars['String']['input']>;
+  bio?: InputMaybe<Scalars['String']['input']>;
+  socialLinks?: InputMaybe<Scalars['JSON']['input']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   AssetsQuery?: Maybe<AssetsStorageQuery>;
   Category?: Maybe<CategoryQuery>;
+  GlobalSearch?: Maybe<GlobalSearchQuery>;
   Ping?: Maybe<PingQuery>;
   SearchUser?: Maybe<SearchUserQuery>;
   getPosts: Array<Post>;
+  getProfile?: Maybe<Profile>;
   getUser?: Maybe<User>;
+};
+
+
+export type QueryGetProfileArgs = {
+  userId: Scalars['String']['input'];
 };
 
 
@@ -240,25 +295,31 @@ export type SearchUserQuerySearchUsersArgs = {
   data?: InputMaybe<SearchUserInput>;
 };
 
+export type SetRolesMutation = {
+  __typename?: 'SetRolesMutation';
+  setUserRole: Scalars['Boolean']['output'];
+};
+
+
+export type SetRolesMutationSetUserRoleArgs = {
+  newRole: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+};
+
 export type TokenResponse = {
   __typename?: 'TokenResponse';
   accessToken: Scalars['String']['output'];
 };
 
 export type UpdateAssetInput = {
-  bucketName?: InputMaybe<Scalars['String']['input']>;
   category: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
-  fileKey?: InputMaybe<Scalars['String']['input']>;
-  fileSize?: InputMaybe<Scalars['Int']['input']>;
-  fileType?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
-  metadata?: InputMaybe<Scalars['JSON']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   ownerId?: InputMaybe<Scalars['String']['input']>;
   publicAccess?: InputMaybe<Scalars['Boolean']['input']>;
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
-  thumbnailUrl?: InputMaybe<Scalars['String']['input']>;
+  titleName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = {
@@ -281,6 +342,12 @@ export type UserRegisterInput = {
   username: Scalars['String']['input'];
 };
 
+export type UserSearchResult = {
+  __typename?: 'UserSearchResult';
+  avatarUrl?: Maybe<Scalars['String']['output']>;
+  username: Scalars['String']['output'];
+};
+
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -294,12 +361,26 @@ export type PingServerQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type PingServerQuery = { __typename?: 'Query', Ping?: { __typename?: 'PingQuery', ping: string } | null };
 
+export type GlobalSearchQueryVariables = Exact<{
+  query: Scalars['String']['input'];
+}>;
+
+
+export type GlobalSearchQuery = { __typename?: 'Query', GlobalSearch?: { __typename?: 'GlobalSearchQuery', search: { __typename?: 'GlobalSearchResult', modelsCount: number, executionTime: number, users: Array<{ __typename?: 'UserSearchResult', username: string, avatarUrl?: string | null }> } } | null };
+
 export type RegisterMutationVariables = Exact<{
   data: UserRegisterInput;
 }>;
 
 
 export type RegisterMutation = { __typename?: 'Mutation', Auth?: { __typename?: 'AuthMutation', register: { __typename?: 'AuthPayload', accessToken: string, user: { __typename?: 'User', id: string, email: string, username: string, role: string } } } | null };
+
+export type GetProfileQueryVariables = Exact<{
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type GetProfileQuery = { __typename?: 'Query', getProfile?: { __typename?: 'Profile', id: string, userId: string, avatarUrl?: string | null, backgroundUrl?: string | null, bio?: string | null, socialLinks?: any | null, createdAt: any, updatedAt: any } | null };
 
 
 export const LoginDocument = gql`
@@ -367,6 +448,43 @@ export function usePingServerLazyQuery(options: VueApolloComposable.UseQueryOpti
   return VueApolloComposable.useLazyQuery<PingServerQuery, PingServerQueryVariables>(PingServerDocument, {}, options);
 }
 export type PingServerQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<PingServerQuery, PingServerQueryVariables>;
+export const GlobalSearchDocument = gql`
+    query GlobalSearch($query: String!) {
+  GlobalSearch {
+    search(query: $query) {
+      users {
+        username
+        avatarUrl
+      }
+      modelsCount
+      executionTime
+    }
+  }
+}
+    `;
+
+/**
+ * __useGlobalSearchQuery__
+ *
+ * To run a query within a Vue component, call `useGlobalSearchQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGlobalSearchQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useGlobalSearchQuery({
+ *   query: // value for 'query'
+ * });
+ */
+export function useGlobalSearchQuery(variables: GlobalSearchQueryVariables | VueCompositionApi.Ref<GlobalSearchQueryVariables> | ReactiveFunction<GlobalSearchQueryVariables>, options: VueApolloComposable.UseQueryOptions<GlobalSearchQuery, GlobalSearchQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GlobalSearchQuery, GlobalSearchQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GlobalSearchQuery, GlobalSearchQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<GlobalSearchQuery, GlobalSearchQueryVariables>(GlobalSearchDocument, variables, options);
+}
+export function useGlobalSearchLazyQuery(variables?: GlobalSearchQueryVariables | VueCompositionApi.Ref<GlobalSearchQueryVariables> | ReactiveFunction<GlobalSearchQueryVariables>, options: VueApolloComposable.UseQueryOptions<GlobalSearchQuery, GlobalSearchQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GlobalSearchQuery, GlobalSearchQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GlobalSearchQuery, GlobalSearchQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<GlobalSearchQuery, GlobalSearchQueryVariables>(GlobalSearchDocument, variables, options);
+}
+export type GlobalSearchQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GlobalSearchQuery, GlobalSearchQueryVariables>;
 export const RegisterDocument = gql`
     mutation Register($data: UserRegisterInput!) {
   Auth {
@@ -404,3 +522,40 @@ export function useRegisterMutation(options: VueApolloComposable.UseMutationOpti
   return VueApolloComposable.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument, options);
 }
 export type RegisterMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<RegisterMutation, RegisterMutationVariables>;
+export const GetProfileDocument = gql`
+    query GetProfile($userId: String!) {
+  getProfile(userId: $userId) {
+    id
+    userId
+    avatarUrl
+    backgroundUrl
+    bio
+    socialLinks
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetProfileQuery__
+ *
+ * To run a query within a Vue component, call `useGetProfileQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProfileQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useGetProfileQuery({
+ *   userId: // value for 'userId'
+ * });
+ */
+export function useGetProfileQuery(variables: GetProfileQueryVariables | VueCompositionApi.Ref<GetProfileQueryVariables> | ReactiveFunction<GetProfileQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetProfileQuery, GetProfileQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetProfileQuery, GetProfileQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetProfileQuery, GetProfileQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<GetProfileQuery, GetProfileQueryVariables>(GetProfileDocument, variables, options);
+}
+export function useGetProfileLazyQuery(variables?: GetProfileQueryVariables | VueCompositionApi.Ref<GetProfileQueryVariables> | ReactiveFunction<GetProfileQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetProfileQuery, GetProfileQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetProfileQuery, GetProfileQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetProfileQuery, GetProfileQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<GetProfileQuery, GetProfileQueryVariables>(GetProfileDocument, variables, options);
+}
+export type GetProfileQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetProfileQuery, GetProfileQueryVariables>;
