@@ -1,8 +1,33 @@
 <template>
   <div class="main-container">
     <header class="header">
-      <div class="logo">
-        <h1 class="logo-text">3D HUB</h1>
+      <div class="logo-section">
+        <div class="logo">
+          <h1 class="logo-text">3D HUB</h1>
+        </div>
+        
+        <div class="main-nav">
+          <button class="nav-btn catalog-btn">
+            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zM10 9h8v2h-8zm0 3h4v2h-4zm0-6h8v2h-8z"/>
+            </svg>
+            Catalog
+          </button>
+          
+          <button class="nav-btn">
+            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+            </svg>
+            Community
+          </button>
+
+          <button class="nav-btn">
+            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 12H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm0-3H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1zm0-3H7c-.55 0-1-.45-1-1s.45-1 1-1h10c.55 0 1 .45 1 1s-.45 1-1 1z"/>
+            </svg>
+            Blog
+          </button>
+        </div>
       </div>
       
       <SearchBar class="search-bar" />
@@ -196,10 +221,33 @@ const handleUpload = () => {
   align-items: center;
 }
 
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.main-nav {
+  display: flex;
+  gap: 1rem;
+}
+
 .logo {
   height: 60px;
   display: flex;
   align-items: center;
+}
+
+.catalog-btn {
+  background: linear-gradient(135deg, #4CAF50, #388E3C);
+  border: none;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.catalog-btn:hover {
+  background: linear-gradient(135deg, #42A5F5, #2196F3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
 }
 
 .logo-text {
@@ -277,39 +325,67 @@ const handleUpload = () => {
 }
 
 .nav-btn {
-  padding: 0.75rem 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 25px;
-  background: rgba(40, 40, 40, 0.8);
+  padding: 0.75rem 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 30px;
+  background: rgba(30, 30, 30, 0.95);
   color: #fff;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  backdrop-filter: blur(10px);
 }
 
 .nav-btn:hover {
-  background: rgba(60, 60, 60, 0.8);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+  background: rgba(45, 45, 45, 0.95);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.nav-btn:active {
+  transform: translateY(-1px);
 }
 
 .nav-btn.primary {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
+  background: linear-gradient(135deg, #00c853, #00b248);
   color: #fff;
   border: none;
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 200, 83, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
 .nav-btn.primary:hover {
-  background: linear-gradient(135deg, #66BB6A, #4CAF50);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  background: linear-gradient(135deg, #00e676, #00c853);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 200, 83, 0.4);
+}
+
+.nav-btn.primary:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.nav-btn.primary:hover:before {
+  left: 100%;
 }
 
 .btn-icon {
