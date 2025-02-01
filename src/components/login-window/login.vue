@@ -99,21 +99,22 @@ const closeModal = () => {
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  font-family: 'Poppins', sans-serif;
 }
 
 .login-modal::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(10px);
   z-index: -1;
 }
 
 .login-content {
   position: relative;
-  background: linear-gradient(145deg, #1e1e2e, #2d2d44);
-  border-radius: 20px;
+  background: #1a1a1a;
+  border-radius: 15px;
   padding: 2.5rem;
   width: 100%;
   max-width: 420px;
@@ -139,19 +140,20 @@ const closeModal = () => {
 }
 
 .header-underline {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.8);
+  height: 2px;
+  background: #4CAF50;
   margin-left: 0.5rem;
   margin-top: 0.5rem;
   width: 60px;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
 }
 
 .close-btn {
   position: absolute;
   top: -15px;
   right: -15px;
-  background: #363649;
-  border: none;
+  background: #333;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   width: 32px;
   height: 32px;
@@ -165,7 +167,7 @@ const closeModal = () => {
 }
 
 .close-btn:hover {
-  background: #4a4a66;
+  background: #4CAF50;
   transform: rotate(90deg);
 }
 
@@ -179,7 +181,7 @@ const closeModal = () => {
   padding: 15px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 8px;
   color: #fff;
   font-size: 1rem;
   transition: all 0.3s;
@@ -187,8 +189,8 @@ const closeModal = () => {
 
 .form-group input:focus {
   outline: none;
-  border-color: #7d5fff;
-  box-shadow: 0 0 15px rgba(125, 95, 255, 0.3);
+  border-color: #4CAF50;
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
 }
 
 .form-group label {
@@ -196,7 +198,7 @@ const closeModal = () => {
   left: 15px;
   top: 50%;
   transform: translateY(-50%);
-  color: #a0a0b8;
+  color: #999;
   transition: all 0.3s;
   pointer-events: none;
   font-size: 1.1rem;
@@ -208,7 +210,7 @@ const closeModal = () => {
   top: -12px;
   left: 10px;
   font-size: 0.95rem;
-  color: #7d5fff;
+  color: #4CAF50;
   font-weight: 600;
 }
 
@@ -219,7 +221,7 @@ const closeModal = () => {
 .checkbox-container {
   display: flex;
   align-items: center;
-  color: #a0a0b8;
+  color: #999;
   cursor: pointer;
   font-size: 1rem;
   user-select: none;
@@ -243,8 +245,8 @@ const closeModal = () => {
 }
 
 .checkbox-container input:checked + .checkmark {
-  background: #7d5fff;
-  border-color: #7d5fff;
+  background: #4CAF50;
+  border-color: #4CAF50;
 }
 
 .checkbox-container input:checked + .checkmark:after {
@@ -256,13 +258,13 @@ const closeModal = () => {
 
 .login-btn {
   width: 100%;
-  padding: 15px;
-  background: linear-gradient(45deg, #7d5fff, #7158e2);
+  padding: 12px 30px;
+  background: #4CAF50;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   color: white;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 16px;
   cursor: pointer;
   transition: all 0.3s;
   text-transform: uppercase;
@@ -270,8 +272,8 @@ const closeModal = () => {
 }
 
 .login-btn:hover {
+  background: #66BB6A;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(125, 95, 255, 0.4);
 }
 
 .divider {
@@ -299,7 +301,7 @@ const closeModal = () => {
 }
 
 .divider span {
-  color: #a0a0b8;
+  color: #999;
   font-size: 1.1rem;
 }
 
@@ -308,7 +310,7 @@ const closeModal = () => {
   padding: 12px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: 8px;
   color: #fff;
   display: flex;
   align-items: center;
@@ -335,17 +337,17 @@ const closeModal = () => {
 }
 
 .links a {
-  color: #7d5fff;
+  color: #4CAF50;
   text-decoration: none;
   transition: color 0.3s;
 }
 
 .links a:hover {
-  color: #9780ff;
+  color: #66BB6A;
 }
 
 .separator {
-  color: #a0a0b8;
+  color: #999;
   margin: 0 10px;
 }
 

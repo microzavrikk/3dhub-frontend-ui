@@ -10,7 +10,7 @@
       <div class="verification-body">
         <div class="email-icon">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22 6C22 4.9 21.1 4 20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6ZM20 6L12 11L4 6H20ZM20 18H4V8L12 13L20 8V18Z" fill="#7d5fff"/>
+            <path d="M22 6C22 4.9 21.1 4 20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6ZM20 6L12 11L4 6H20ZM20 18H4V8L12 13L20 8V18Z" fill="#4CAF50"/>
           </svg>
         </div>
 
@@ -92,32 +92,39 @@ const closeModal = () => {
 <style scoped>
 .verification-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.85);
+  inset: 0;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
+  font-family: 'Poppins', sans-serif;
+}
+
+.verification-modal::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.8);
   backdrop-filter: blur(10px);
+  z-index: -1;
 }
 
 .verification-content {
-  background: linear-gradient(145deg, #1e1e2e, #2d2d44);
-  border-radius: 20px;
+  position: relative;
+  background: #1a1a1a;
+  border-radius: 15px;
   padding: 2.5rem;
   width: 100%;
   max-width: 420px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  animation: fadeIn 0.4s ease-out;
+  animation: fadeIn 0.3s ease-out;
+  margin: 1rem;
 }
 
 .verification-header {
   position: relative;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   text-align: left;
 }
 
@@ -131,19 +138,20 @@ const closeModal = () => {
 }
 
 .header-underline {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.8);
+  height: 2px;
+  background: #4CAF50;
   margin-left: 0.5rem;
   margin-top: 0.5rem;
   width: 60px;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
 }
 
 .close-btn {
   position: absolute;
   top: -15px;
   right: -15px;
-  background: #363649;
-  border: none;
+  background: #333;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   width: 32px;
   height: 32px;
@@ -157,7 +165,7 @@ const closeModal = () => {
 }
 
 .close-btn:hover {
-  background: #4a4a66;
+  background: #4CAF50;
   transform: rotate(90deg);
 }
 
@@ -181,19 +189,19 @@ const closeModal = () => {
 }
 
 .verification-text {
-  color: #a0a0b8;
+  color: #999;
   font-size: 1.1rem;
   margin-bottom: 1rem;
   line-height: 1.5;
 }
 
 .email-highlight {
-  color: #7d5fff;
+  color: #4CAF50;
   font-weight: 600;
 }
 
 .verification-description {
-  color: #a0a0b8;
+  color: #999;
   font-size: 0.95rem;
   margin-bottom: 2rem;
   line-height: 1.6;
@@ -201,13 +209,13 @@ const closeModal = () => {
 
 .resend-btn {
   width: 100%;
-  padding: 15px;
-  background: linear-gradient(45deg, #7d5fff, #7158e2);
+  padding: 12px 30px;
+  background: #4CAF50;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   color: white;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 16px;
   cursor: pointer;
   transition: all 0.3s;
   text-transform: uppercase;
@@ -215,15 +223,14 @@ const closeModal = () => {
 }
 
 .resend-btn:disabled {
-  background: #363649;
+  background: #333;
   cursor: not-allowed;
   transform: none;
-  box-shadow: none;
 }
 
 .resend-btn:not(:disabled):hover {
+  background: #66BB6A;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(125, 95, 255, 0.4);
 }
 
 .action-links {
@@ -238,7 +245,7 @@ const closeModal = () => {
 .help-link {
   background: none;
   border: none;
-  color: #7d5fff;
+  color: #4CAF50;
   font-size: 0.9rem;
   cursor: pointer;
   text-decoration: none;
@@ -247,17 +254,17 @@ const closeModal = () => {
 
 .change-email-btn:hover,
 .help-link:hover {
-  color: #9780ff;
+  color: #66BB6A;
 }
 
 .separator {
-  color: #a0a0b8;
+  color: #999;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-20px);
   }
   to {
     opacity: 1;
@@ -276,4 +283,4 @@ const closeModal = () => {
     transform: scale(1);
   }
 }
-</style> 
+</style>
