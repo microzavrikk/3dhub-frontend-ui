@@ -1,7 +1,7 @@
 <template>
   <div class="upload-container">
     <h2>Upload your 3D creation</h2>
-    <p class="upload-subtitle">Supported formats: GLTF, OBJ with textures</p>
+    <p class="upload-subtitle">Supported formats: GLTF, GLB, OBJ with textures</p>
 
     <div class="upload-sections">
       <div
@@ -17,7 +17,7 @@
           ref="fileInput"
           @change="handleFileSelect"
           class="file-input"
-          accept=".gltf,.obj,.bin,.png,.jpg,.jpeg"
+          accept=".gltf,.glb,.obj,.bin,.png,.jpg,.jpeg"
           multiple
         >
 
@@ -55,6 +55,7 @@
             <p class="drop-subtitle">or click to browse</p>
             <div class="supported-formats">
               <span class="format-tag">GLTF</span>
+              <span class="format-tag">GLB</span>
               <span class="format-tag">OBJ</span>
               <span class="format-tag">Textures</span>
             </div>
@@ -103,7 +104,7 @@ export default {
       selectedFiles: [],
       modelFile: null,
       assetFiles: [], // Added assetFiles array
-      acceptedModelTypes: ['.gltf', '.obj'],
+      acceptedModelTypes: ['.gltf', '.glb', '.obj'],
       acceptedAssetTypes: ['.bin', '.png', '.jpg', '.jpeg']
     };
   },
@@ -140,6 +141,10 @@ export default {
       files.forEach(file => {
         const extension = '.' + file.name.split('.').pop().toLowerCase();
         
+        if (extension === '.bin') {
+          console.log('Original uploaded bin file size:', file.size);
+        }
+        
         // Check if file is main model
         if (this.acceptedModelTypes.includes(extension)) {
           this.modelFile = file;
@@ -155,6 +160,7 @@ export default {
             // If not main model file, add as asset
             if (!this.acceptedModelTypes.includes(extension)) {
               this.assetFiles.push(file); // Add to assetFiles array
+              console.log("file123123 [processFiles]", file);
               this.modelStore.addAssetFile(file);
             }
           }
@@ -195,7 +201,7 @@ export default {
 
     handleUpload() {
       if (!this.modelFile) {
-        alert('Please select a 3D model file (.gltf or .obj)');
+        alert('Please select a 3D model file (.gltf, .glb or .obj)');
         return;
       }
       console.log("store", this.modelStore);

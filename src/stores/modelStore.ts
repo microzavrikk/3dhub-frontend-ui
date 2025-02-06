@@ -7,6 +7,7 @@ interface ModelState {
   assetUrls: Map<string, string>;
   loadingProgress: number;
   isLoading: boolean;
+  instanceId: string; // Add unique instance ID
 }
 
 export const useModelStore = defineStore('model', {
@@ -16,11 +17,13 @@ export const useModelStore = defineStore('model', {
     assetFiles: [],
     assetUrls: new Map(),
     loadingProgress: 0,
-    isLoading: false
+    isLoading: false,
+    instanceId: Math.random().toString(36).substring(7) // Generate random ID
   }),
 
   getters: {
     storeDebugInfo: (state): object => ({
+      instanceId: state.instanceId,
       modelFileName: state.model?.name || 'No file selected',
       modelFileSize: state.model ? `${(state.model.size / 1024).toFixed(2)} KB` : 'N/A',
       modelFileType: state.model?.type || 'N/A',
@@ -29,8 +32,6 @@ export const useModelStore = defineStore('model', {
       assetFilesCount: state.assetFiles.length
     })
   },
-
-
 
   actions: {
     setLoadingProgress(progress: number) {
@@ -45,15 +46,18 @@ export const useModelStore = defineStore('model', {
       this.setIsLoading(true);
       this.setLoadingProgress(0);
       
-      console.log('Setting model:', file.name);
+      console.log(`[Instance ${this.instanceId}] Setting model:`, file.name);
       if (this.previewUrl) {
         URL.revokeObjectURL(this.previewUrl);
       }
 
-      console.log("file", file);
+      console.log(`[Instance ${this.instanceId}] file:`, file);
             
       this.model = file;
       this.previewUrl = URL.createObjectURL(file);
+
+      console.log('model', this.model);
+      console.log('previewUrl', this.previewUrl);
       
       await this.addAssetFile(file);
       
@@ -66,7 +70,7 @@ export const useModelStore = defineStore('model', {
     },
     
     async addAssetFile(file: File): Promise<void> {
-      console.log('Adding asset file:', file.name);
+      console.log(`[Instance ${this.instanceId}] Adding asset file:`, file.name);
 
       const extension = file.name.split('.').pop()?.toLowerCase();
       const acceptedTypes = ['gltf', 'obj', 'bin', 'png', 'jpg', 'jpeg'];
@@ -75,16 +79,17 @@ export const useModelStore = defineStore('model', {
         if (!this.assetFiles.find(f => f.name === file.name)) {
           this.assetFiles.push(file);
           const url = URL.createObjectURL(file);
-          this.assetUrls.set(file.name, url);
+          this.assetUrls.set(`${this.instanceId}_${file.name}`, url); // Namespace URLs with instance ID
         }
       }
     },
 
     removeAssetFile(file: File): void {
       this.assetFiles = this.assetFiles.filter(f => f.name !== file.name);
-      if (this.assetUrls.has(file.name)) {
-        URL.revokeObjectURL(this.assetUrls.get(file.name)!);
-        this.assetUrls.delete(file.name);
+      const urlKey = `${this.instanceId}_${file.name}`;
+      if (this.assetUrls.has(urlKey)) {
+        URL.revokeObjectURL(this.assetUrls.get(urlKey)!);
+        this.assetUrls.delete(urlKey);
       }
       
       if (this.model && file.name === this.model.name) {
@@ -103,13 +108,13 @@ export const useModelStore = defineStore('model', {
         return this.assetFiles;
       }
       else {
-        console.log("No asset files found");
+        console.log(`[Instance ${this.instanceId}] No asset files found`);
       }
       return [];
     },
     
     getAssetUrl(fileName: string): string | undefined {
-      return this.assetUrls.get(fileName);
+      return this.assetUrls.get(`${this.instanceId}_${fileName}`);
     },
     
     clearModel(): void {
@@ -130,10 +135,9 @@ export const useModelStore = defineStore('model', {
     },
 
     logStoreState(): void {
-      console.group('Model Store State');
+      console.group(`Model Store State [Instance ${this.instanceId}]`);
       console.log('Debug Info:', this.storeDebugInfo);
       
-      // Логируем основную модель
       console.group('Model Files:');
       if (this.model) {
         console.log('Main Model:', {
@@ -144,10 +148,9 @@ export const useModelStore = defineStore('model', {
       }
       console.groupEnd();
 
-      // Логируем ассеты и их URL
       console.group('Asset Files:');
       this.assetFiles.forEach(file => {
-        const url = this.assetUrls.get(file.name);
+        const url = this.assetUrls.get(`${this.instanceId}_${file.name}`);
         console.log(`${file.name}:`, {
           url: url,
           size: `${(file.size / 1024).toFixed(2)} KB`,

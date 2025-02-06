@@ -124,6 +124,7 @@
                 class="form-input"
                 required
                 placeholder="Enter model name"
+                style="max-width: 510px"
               />
             </div>
 
@@ -135,7 +136,23 @@
                 class="form-textarea"
                 placeholder="Describe your model..."
                 rows="3"
+                style="max-width: 510px; height: 70px;"
               ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="price" class="form-label">Price ($)</label>
+              <input
+                v-model="formData.price"
+                type="number"
+                id="price"
+                class="form-input"
+                required
+                min="0"
+                step="0.01"
+                placeholder="Enter price in USD"
+                style="max-width: 510px"
+              />
             </div>
           </div>
 
@@ -215,31 +232,6 @@
               </div>
             </div>
           </div>
-
-          <div class="form-section advanced-settings">
-            <h3 class="section-title">Advanced Settings</h3>
-            <div class="settings-grid">
-              <div class="setting-item">
-                <label class="setting-label">
-                  <input type="checkbox" v-model="formData.allowComments"/>
-                  Allow Comments
-                </label>
-              </div>
-              <div class="setting-item">
-                <label class="setting-label">
-                  <input type="checkbox" v-model="formData.allowTextureInspection"/>
-                  Allow Texture Inspection
-                </label>
-              </div>
-              <div class="setting-item">
-                <label class="setting-label">
-                  <input type="checkbox" v-model="formData.ageRestricted"/>
-                  Age Restricted Content
-                </label>
-              </div>
-            </div>
-          </div>
-
           <button type="submit" class="submit-btn" :disabled="isSubmitting">
             {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
           </button>
@@ -305,7 +297,8 @@ const formData = ref({
   publicAccess: false,
   allowComments: true,
   allowTextureInspection: true,
-  ageRestricted: false
+  ageRestricted: false,
+  price: 0
 });
 
 const newTag = ref('');
@@ -359,6 +352,7 @@ async function handleSubmit() {
     formDataToSend.append('tags', JSON.stringify(assetData.tags));
     formDataToSend.append('publicAccess', String(assetData.publicAccess));
     formDataToSend.append('username', assetData.ownerNickname);
+    formDataToSend.append('price', String(assetData.price));
 
     console.log(formDataToSend);
 

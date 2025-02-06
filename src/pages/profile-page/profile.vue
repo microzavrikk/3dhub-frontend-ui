@@ -200,6 +200,9 @@ const loadModelFiles = async (model: any) => {
       type: 'application/octet-stream'
     });
 
+    console.log("gtlfBlob", gltfBlob);
+    console.log("binBlob", binBlob);
+
     // Set main .gltf file
     await modelStore.setModel(gltfModelFile);
     
@@ -273,7 +276,8 @@ const handleBannerChange = async (event: Event) => {
 
 const loadUserAssets = async () => {
   try {
-    const response = await axios.get(`http://localhost:4000/assets-storage/assets/user/${user.value?.username}`);    
+    const response = await axios.get(`http://localhost:4000/assets-storage/assets/user/${user.value?.username}`);
+    console.log("response", response);
     const filteredAssets = response.data.filter((asset: any) => asset.titleName !== username.value);
 
     console.log("filteredAssets", filteredAssets);

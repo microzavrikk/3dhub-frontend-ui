@@ -154,52 +154,57 @@ const loadModel = async (file: File) => {
         loadingProgress.value = (loaded / total) * 100;
       };
 
-      const fileMap = new Map();
-      assetFiles.forEach(file => {
-        const fileName = file.name;
-        fileMap.set(fileName, file);
-        fileMap.set(`textures/${fileName}`, file);
-        if (fileName.endsWith('.bin')) {
-          fileMap.set(fileName.replace('scene.', ''), file);
-        }
-      });
-
-      const fileLoader = new THREE.FileLoader(loader.manager);
-      fileLoader.setResponseType('arraybuffer');
-      
-      const originalLoad = fileLoader.load;
-      fileLoader.load = function(url: string, onLoad: (response: ArrayBuffer) => void) {
-        const fileName = url.split('/').pop() as string;
-        const file = fileMap.get(url) || fileMap.get(fileName);
-        
-        if (!file) {
-          console.warn(`File not found: ${url}, fileName: ${fileName}`);
-          return originalLoad.call(this, url, onLoad);
-        }
-
-        file.arrayBuffer().then(buffer => onLoad(buffer));
-      };
-
-      loader.manager.addHandler(/\.gltf$/, fileLoader);
-
-      const manager = new THREE.LoadingManager();
-      let urlModifier: ((url: string) => string) | null = null;
-      
-      manager.setURLModifier((url) => {
-        const fileName = url.split('/').pop() as string;
-        const file = fileMap.get(url) || fileMap.get(fileName);
-        if (file) {
-          return URL.createObjectURL(file);
-        }
-        return url;
-      });
-      loader.manager = manager;
-
       const modelData = await file.arrayBuffer();
-      const gltf = await loader.parseAsync(modelData, '');
-      currentModel = gltf.scene;
 
-      manager.setURLModifier(() => '');
+      if (extension === 'glb') {
+        const gltf = await loader.parseAsync(modelData, '');
+        currentModel = gltf.scene;
+      } else {
+        // Для GLTF файлов используем файловую систему
+        const fileMap = new Map();
+        assetFiles.forEach(file => {
+          const fileName = file.name;
+          fileMap.set(fileName, file);
+          fileMap.set(`textures/${fileName}`, file);
+          if (fileName.endsWith('.bin')) {
+            fileMap.set(fileName.replace('scene.', ''), file);
+          }
+        });
+
+        const fileLoader = new THREE.FileLoader(loader.manager);
+        fileLoader.setResponseType('arraybuffer');
+        
+        const originalLoad = fileLoader.load;
+        fileLoader.load = function(url: string, onLoad: (response: ArrayBuffer) => void) {
+          const fileName = url.split('/').pop() as string;
+          const file = fileMap.get(url) || fileMap.get(fileName);
+          
+          if (!file) {
+            console.warn(`File not found: ${url}, fileName: ${fileName}`);
+            return originalLoad.call(this, url, onLoad);
+          }
+
+          file.arrayBuffer().then(buffer => onLoad(buffer));
+        };
+
+        loader.manager.addHandler(/\.gltf$/, fileLoader);
+
+        const manager = new THREE.LoadingManager();
+        manager.setURLModifier((url) => {
+          const fileName = url.split('/').pop() as string;
+          const file = fileMap.get(url) || fileMap.get(fileName);
+          if (file) {
+            return URL.createObjectURL(file);
+          }
+          return url;
+        });
+        loader.manager = manager;
+
+        const gltf = await loader.parseAsync(modelData, '');
+        currentModel = gltf.scene;
+
+        manager.setURLModifier(() => '');
+      }
       
     } else if (extension === 'obj') {
       const loader = new OBJLoader();
@@ -263,6 +268,17 @@ onMounted(() => {
     console.log("modelStore in 3d-scene", modelStore);
     console.log('Current asset files info:', modelStore.getAssetFiles());
     console.log('Current asset files:', modelStore.assetFiles);
+    console.log("modelStore.getAssetFiles()", modelStore.getAssetFiles());
+    console.log("modelStore.assetFiles", modelStore.assetFiles);
+    console.log("modelStore.model", modelStore.model);
+  }
+  else {
+    console.log("modelStore in 3d-scene", modelStore);
+    console.log('Current asset files info:', modelStore.getAssetFiles());
+    console.log('Current asset files:', modelStore.assetFiles);
+    console.log("modelStore.getAssetFiles()", modelStore.getAssetFiles());
+    console.log("modelStore.assetFiles", modelStore.assetFiles);
+    console.log("modelStore.model", modelStore.model);
   }
 });
 
