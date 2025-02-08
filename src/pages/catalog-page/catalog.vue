@@ -1,23 +1,23 @@
 <template>
   <div class="catalog-page">
-    <header class="header">
-      <div class="search-section">
-        <div class="search-bar">
-          <input 
-            v-model="searchQuery" 
-            type="text" 
-            placeholder="Search models..."
-            class="search-input"
-          >
-          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-          </svg>
-        </div>
-      </div>
-    </header>
-
+    <Header />
+    
     <div class="catalog-container">
       <div class="filters-section">
+        <div class="search-section">
+          <div class="search-bar">
+            <input 
+              v-model="searchQuery" 
+              type="text" 
+              placeholder="Search models..."
+              class="search-input"
+            >
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+          </div>
+        </div>
+
         <div class="filter-group">
           <h3>Price Range</h3>
           <div class="price-filters">
@@ -202,6 +202,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import ThreeDScene from '../../components/3d-scene/3d-scene.vue';
+import Header from '../../components/header/header.vue';
 
 // State
 const searchQuery = ref('');
@@ -327,73 +328,70 @@ onMounted(async () => {
 <style scoped>
 .catalog-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  background: #121212;
   font-family: 'Poppins', sans-serif;
   color: #fff;
 }
 
-.header {
-  background: rgba(40, 40, 40, 0.8);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 1.25rem 2.5rem;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+.catalog-container {
+  padding: 24px;
+  margin-top: 80px; /* Отступ под хедер */
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .search-section {
-  max-width: 900px;
-  margin: 0 auto;
+  margin-bottom: 24px;
 }
 
 .search-bar {
   position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.search-bar:hover,
+.search-bar:focus-within {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(76, 175, 80, 0.5);
 }
 
 .search-input {
-  width: 100%;
-  padding: 1.2rem 3.5rem 1.2rem 1.8rem;
-  border: 2px solid rgba(76, 175, 80, 0.3);
-  border-radius: 12px;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-  background: rgba(40, 40, 40, 0.7);
+  background: none;
+  border: none;
   color: #fff;
+  font-size: 14px;
+  width: 100%;
+  padding-right: 32px;
+  outline: none;
 }
 
-.search-input:focus {
-  outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 20px rgba(76, 175, 80, 0.2);
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .search-icon {
   position: absolute;
-  right: 1.2rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #4CAF50;
-}
-
-.catalog-container {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 2.5rem;
-  max-width: 1800px;
-  margin: 0 auto;
-  padding: 2.5rem;
+  right: 12px;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .filters-section {
-  background: rgba(26, 26, 26, 0.95);
-  border-radius: 20px;
-  padding: 2rem;
-  border: 2px solid rgba(76, 175, 80, 0.2);
+  background: #1a1a1e;
+  border-radius: 12px;
+  padding: 20px;
   height: fit-content;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 100px;
 }
 
 .filter-group {

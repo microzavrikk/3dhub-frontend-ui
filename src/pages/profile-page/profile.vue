@@ -810,14 +810,13 @@ onUnmounted(() => {
 }
 
 .stat-label {
-  font-size: 14px;
-  color: #ffffff;
+  font-size: 16px;
+  color: white;
   font-weight: 600;
-  text-transform: lowercase;
 }
 
 .stat-dot {
-  color: rgba(255, 255, 255, 0.5);
+  color: white;
   font-size: 14px;
   font-weight: 600;
   margin: 0 2px;
