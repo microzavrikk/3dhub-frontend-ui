@@ -30,10 +30,45 @@ export type Asset = {
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   ownerId: Scalars['String']['output'];
+  price: Scalars['Float']['output'];
   publicAccess?: Maybe<Scalars['Boolean']['output']>;
   tags: Array<Scalars['String']['output']>;
   titleName: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['String']['output']>;
+};
+
+export type AssetOutput = {
+  __typename?: 'AssetOutput';
+  awsLocation: Scalars['String']['output'];
+  category: Scalars['String']['output'];
+  createdAt?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  file: Array<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  ownerId: Scalars['String']['output'];
+  price: Scalars['Float']['output'];
+  publicAccess?: Maybe<Scalars['Boolean']['output']>;
+  tags: Array<Scalars['String']['output']>;
+  titleName: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['String']['output']>;
+};
+
+export type AssetsFilterInput = {
+  assetName?: InputMaybe<Scalars['String']['input']>;
+  categories?: InputMaybe<Array<Scalars['String']['input']>>;
+  formats?: InputMaybe<Array<Scalars['String']['input']>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  priceRange?: InputMaybe<PriceRangeInput>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type AssetsFilterOutput = {
+  __typename?: 'AssetsFilterOutput';
+  assets: Array<AssetOutput>;
+  totalCount: Scalars['Int']['output'];
 };
 
 export type AssetsStorageMutation = {
@@ -60,8 +95,22 @@ export type AssetsStorageMutationUpdateAssetArgs = {
 
 export type AssetsStorageQuery = {
   __typename?: 'AssetsStorageQuery';
+  getAllFileNamesInDatabase: Array<Scalars['String']['output']>;
+  getAllFilesInDatabase: Array<AssetOutput>;
+  getFileByFileId: AssetOutput;
+  getFileByTitleName: Array<AssetOutput>;
   getFileByUserId: FileOutput;
   getFileByUserIdAndFileName: FileOutput;
+};
+
+
+export type AssetsStorageQueryGetFileByFileIdArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type AssetsStorageQueryGetFileByTitleNameArgs = {
+  titleName: Scalars['String']['input'];
 };
 
 
@@ -102,6 +151,13 @@ export type AuthPayload = {
   user: User;
 };
 
+export type CategoryFilter = {
+  __typename?: 'CategoryFilter';
+  count: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type CategoryQuery = {
   __typename?: 'CategoryQuery';
   getAllCategoryInS3: Array<Scalars['String']['output']>;
@@ -114,14 +170,32 @@ export type CreateAssetInput = {
   file: Scalars['Upload']['input'];
   name: Scalars['String']['input'];
   ownerId: Scalars['String']['input'];
+  price: Scalars['Float']['input'];
   publicAccess?: InputMaybe<Scalars['Boolean']['input']>;
   tags: Array<Scalars['String']['input']>;
   titleName: Scalars['String']['input'];
 };
 
+export type DefaultFilters = {
+  __typename?: 'DefaultFilters';
+  assetName: Scalars['String']['output'];
+  categories: Array<CategoryFilter>;
+  formats: Array<FormatFilter>;
+  priceRange: PriceRange;
+  sortOptions: Array<SortOption>;
+  tags: Array<Scalars['String']['output']>;
+  totalCount: Scalars['Int']['output'];
+};
+
 export type FileOutput = {
   __typename?: 'FileOutput';
   Body: Scalars['String']['output'];
+};
+
+export type FormatFilter = {
+  __typename?: 'FormatFilter';
+  count: Scalars['Int']['output'];
+  format: Scalars['String']['output'];
 };
 
 export type GetFileByUserIdAndFileNameDto = {
@@ -207,6 +281,17 @@ export type Post = {
   title: Scalars['String']['output'];
 };
 
+export type PriceRange = {
+  __typename?: 'PriceRange';
+  max: Scalars['Float']['output'];
+  min: Scalars['Float']['output'];
+};
+
+export type PriceRangeInput = {
+  max?: InputMaybe<Scalars['Float']['input']>;
+  min?: InputMaybe<Scalars['Float']['input']>;
+};
+
 export type Profile = {
   __typename?: 'Profile';
   avatarUrl?: Maybe<Scalars['String']['output']>;
@@ -233,9 +318,16 @@ export type Query = {
   GlobalSearch?: Maybe<GlobalSearchQuery>;
   Ping?: Maybe<PingQuery>;
   SearchUser?: Maybe<SearchUserQuery>;
+  findAssetsByFilter: AssetsFilterOutput;
+  getDefaultFilters: DefaultFilters;
   getPosts: Array<Post>;
   getProfile?: Maybe<Profile>;
   getUser?: Maybe<User>;
+};
+
+
+export type QueryFindAssetsByFilterArgs = {
+  input: AssetsFilterInput;
 };
 
 
@@ -306,6 +398,12 @@ export type SetRolesMutationSetUserRoleArgs = {
   username: Scalars['String']['input'];
 };
 
+export type SortOption = {
+  __typename?: 'SortOption';
+  label: Scalars['String']['output'];
+  value: Scalars['String']['output'];
+};
+
 export type TokenResponse = {
   __typename?: 'TokenResponse';
   accessToken: Scalars['String']['output'];
@@ -317,6 +415,7 @@ export type UpdateAssetInput = {
   id: Scalars['String']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
   ownerId?: InputMaybe<Scalars['String']['input']>;
+  price: Scalars['Float']['input'];
   publicAccess?: InputMaybe<Scalars['Boolean']['input']>;
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
   titleName?: InputMaybe<Scalars['String']['input']>;
@@ -374,6 +473,11 @@ export type RegisterMutationVariables = Exact<{
 
 
 export type RegisterMutation = { __typename?: 'Mutation', Auth?: { __typename?: 'AuthMutation', register: { __typename?: 'AuthPayload', accessToken: string, user: { __typename?: 'User', id: string, email: string, username: string, role: string } } } | null };
+
+export type GetDefaultFiltersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetDefaultFiltersQuery = { __typename?: 'Query', getDefaultFilters: { __typename?: 'DefaultFilters', tags: Array<string>, assetName: string, totalCount: number, categories: Array<{ __typename?: 'CategoryFilter', id: string, name: string, count: number }>, priceRange: { __typename?: 'PriceRange', min: number, max: number }, formats: Array<{ __typename?: 'FormatFilter', format: string, count: number }>, sortOptions: Array<{ __typename?: 'SortOption', value: string, label: string }> } };
 
 export type GetProfileQueryVariables = Exact<{
   userId: Scalars['String']['input'];
@@ -522,6 +626,52 @@ export function useRegisterMutation(options: VueApolloComposable.UseMutationOpti
   return VueApolloComposable.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument, options);
 }
 export type RegisterMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<RegisterMutation, RegisterMutationVariables>;
+export const GetDefaultFiltersDocument = gql`
+    query GetDefaultFilters {
+  getDefaultFilters {
+    categories {
+      id
+      name
+      count
+    }
+    priceRange {
+      min
+      max
+    }
+    formats {
+      format
+      count
+    }
+    tags
+    sortOptions {
+      value
+      label
+    }
+    assetName
+    totalCount
+  }
+}
+    `;
+
+/**
+ * __useGetDefaultFiltersQuery__
+ *
+ * To run a query within a Vue component, call `useGetDefaultFiltersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetDefaultFiltersQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useGetDefaultFiltersQuery();
+ */
+export function useGetDefaultFiltersQuery(options: VueApolloComposable.UseQueryOptions<GetDefaultFiltersQuery, GetDefaultFiltersQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetDefaultFiltersQuery, GetDefaultFiltersQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetDefaultFiltersQuery, GetDefaultFiltersQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<GetDefaultFiltersQuery, GetDefaultFiltersQueryVariables>(GetDefaultFiltersDocument, {}, options);
+}
+export function useGetDefaultFiltersLazyQuery(options: VueApolloComposable.UseQueryOptions<GetDefaultFiltersQuery, GetDefaultFiltersQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetDefaultFiltersQuery, GetDefaultFiltersQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetDefaultFiltersQuery, GetDefaultFiltersQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<GetDefaultFiltersQuery, GetDefaultFiltersQueryVariables>(GetDefaultFiltersDocument, {}, options);
+}
+export type GetDefaultFiltersQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetDefaultFiltersQuery, GetDefaultFiltersQueryVariables>;
 export const GetProfileDocument = gql`
     query GetProfile($userId: String!) {
   getProfile(userId: $userId) {

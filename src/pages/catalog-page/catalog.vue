@@ -20,47 +20,26 @@
 
         <div class="filter-group">
           <h3>Price Range</h3>
-          <div class="price-filters">
-            <label class="filter-option">
-              <input 
-                type="radio" 
-                v-model="priceFilter" 
-                value="free"
-                class="custom-radio"
-              > Free
-            </label>
-            <label class="filter-option">
-              <input 
-                type="radio" 
-                v-model="priceFilter" 
-                value="under5"
-                class="custom-radio"
-              > Under $5
-            </label>
-            <label class="filter-option">
-              <input 
-                type="radio" 
-                v-model="priceFilter" 
-                value="5to10"
-                class="custom-radio"
-              > $5 - $10
-            </label>
-            <label class="filter-option">
-              <input 
-                type="radio" 
-                v-model="priceFilter" 
-                value="10to20"
-                class="custom-radio"
-              > $10 - $20
-            </label>
-            <label class="filter-option">
-              <input 
-                type="radio" 
-                v-model="priceFilter" 
-                value="above20"
-                class="custom-radio"
-              > Above $20
-            </label>
+          <div class="price-inputs" style="padding-left: -100px;">
+            <div class="price-input-wrapper">
+              <input
+                type="number"
+                v-model.number="priceRange.min"
+                :placeholder="filterStore.priceRange.min"
+                class="price-input"
+                @input="validatePriceRange"
+              >
+            </div>
+            <span class="price-separator">-</span>
+            <div class="price-input-wrapper">
+              <input
+                type="number"
+                v-model.number="priceRange.max"
+                :placeholder="filterStore.priceRange.max"
+                class="price-input"
+                @input="validatePriceRange"
+              >
+            </div>
           </div>
         </div>
 
@@ -201,44 +180,43 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useQuery } from '@vue/apollo-composable';
+import { useFilterStore } from '../../stores/filterStore';
+
+import { GetDefaultFiltersQuery, GetDefaultFiltersDocument } from '../../types';
 import ThreeDScene from '../../components/3d-scene/3d-scene.vue';
 import Header from '../../components/header/header.vue';
 
+// Stores
+const filterStore = useFilterStore();
+
 // State
 const searchQuery = ref('');
-const priceFilter = ref('all');
+const priceRange = ref({
+  min: 0,
+  max: 1000
+});
 const selectedCategories = ref<string[]>([]);
 const selectedTags = ref<string[]>([]);
 const selectedFormats = ref<string[]>([]);
 const loading = ref(true);
-const models = ref<any[]>([]);
+const models = ref<any[]>([]); // Initialize as empty array
 const sortBy = ref('newest');
-const categories = ref<string[]>([]);
 
 const formats = ['GLTF', 'GLB', 'FBX', 'OBJ'];
 
-const popularTags = [
-  'Low-poly',
-  'Realistic',
-  'Animated', 
-  'PBR',
-  'Game-ready',
-  'Rigged',
-  'Textured',
-  'Modular'
-];
-
-// Add this interface near the top of the script section
-interface CategoryResponse {
-  data: {
-    Category: {
-      getCategories: string[];
-      getAllCategoryInS3: string[];
-    }
-  }
-}
+const { result } = useQuery(GetDefaultFiltersDocument);
 
 // Methods
+const validatePriceRange = () => {
+  if (priceRange.value.min > priceRange.value.max) {
+    priceRange.value.min = priceRange.value.max;
+  }
+  if (priceRange.value.max < priceRange.value.min) {
+    priceRange.value.max = priceRange.value.min;
+  }
+};
+
 const toggleTag = (tag: string) => {
   const index = selectedTags.value.indexOf(tag);
   if (index === -1) {
@@ -250,7 +228,10 @@ const toggleTag = (tag: string) => {
 
 const clearFilters = () => {
   searchQuery.value = '';
-  priceFilter.value = 'all';
+  priceRange.value = {
+    min: filterStore.priceRange.min,
+    max: filterStore.priceRange.max
+  };
   selectedCategories.value = [];
   selectedTags.value = [];
   selectedFormats.value = [];
@@ -263,10 +244,27 @@ const viewModel = (model: any) => {
 
 // Computed
 const filteredCategories = computed(() => {
-  return categories.value.filter(category => /^[A-Z]/.test(category));
+  return filterStore.categories.filter(category => /^[A-Z]/.test(category));
 });
 
+const popularTags = computed(() => [
+  'Character', 
+  'Environment',
+  'Vehicle',
+  'Furniture',
+  'Animal',
+  'Plant',
+  'Weapon',
+  'Food',
+  'Architecture',
+  'Sci-fi'
+]);
+
 const filteredModels = computed(() => {
+  if (!Array.isArray(models.value)) {
+    return [];
+  }
+  
   return models.value.filter(model => {
     if (searchQuery.value && !model.name.toLowerCase().includes(searchQuery.value.toLowerCase())) {
       return false;
@@ -276,49 +274,23 @@ const filteredModels = computed(() => {
   });
 });
 
-// Update the fetchCategories function
-const fetchCategories = async () => {
-  try {
-    const query = `
-      query {
-        Category {
-          getCategories
-          getAllCategoryInS3
-        }
-      }
-    `;
-
-    const response = await fetch('http://localhost:4000/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query })
-    });
-
-    const data = await response.json() as CategoryResponse;
-    categories.value = [...new Set([
-      ...(data.data.Category.getCategories || []),
-      ...(data.data.Category.getAllCategoryInS3 || [])
-    ])];
-  } catch (error) {
-    console.error('Failed to fetch categories:', error);
-  }
-};
-
 // Lifecycle
 onMounted(async () => {
   try {
-    await Promise.all([
-      fetchCategories(),
-      fetch('http://localhost:4000/models')
-        .then(res => res.json())
-        .then((data) => {
-          models.value = data as any[];
-        })
-    ]);
+    const response = await fetch('http://localhost:4000/models');
+    const data = await response.json();
+    models.value = Array.isArray(data) ? data : [];
+
+    if (result.value) {
+      filterStore.setFilterParams(result.value);
+      priceRange.value = {
+        min: filterStore.priceRange.min,
+        max: filterStore.priceRange.max
+      };
+    }
   } catch (error) {
     console.error('Failed to fetch data:', error);
+    models.value = []; // Set to empty array on error
   } finally {
     loading.value = false;
   }
@@ -407,6 +379,66 @@ onMounted(async () => {
   letter-spacing: 0.5px;
 }
 
+.price-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 15px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  margin-left: -14px;
+  padding-right: -15px;
+}
+
+.price-input-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 120px;
+}
+
+.price-input {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: 0.3px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  backdrop-filter: blur(4px);
+  -moz-appearance: textfield;
+}
+
+.price-input::-webkit-outer-spin-button,
+.price-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.price-input:hover,
+.price-input:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.price-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.price-separator {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+  font-size: 14px;
+  margin: 0 2px;
+}
+
 .filter-option {
   display: flex;
   align-items: center;
@@ -447,35 +479,6 @@ onMounted(async () => {
   position: absolute;
   color: white;
   font-size: 14px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* Custom radio styles */
-.custom-radio {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(76, 175, 80, 0.5);
-  border-radius: 50%;
-  background: rgba(26, 26, 26, 0.95);
-  cursor: pointer;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.custom-radio:checked {
-  border-color: #4CAF50;
-}
-
-.custom-radio:checked::after {
-  content: '';
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: #4CAF50;
-  border-radius: 50%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
