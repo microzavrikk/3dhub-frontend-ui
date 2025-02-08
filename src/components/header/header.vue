@@ -3,7 +3,8 @@
     <div class="logo-section">
       <div class="logo">
         <h1 class="logo-text">
-          <span class="logo-3d">3D HUB</span>
+          <span class="logo-3d">3D</span>
+          <span class="logo-hub">HUB</span>
         </h1>
       </div>
       
@@ -175,6 +176,31 @@ const handleUpload = () => {
   align-items: center;
 }
 
+.logo-text {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+}
+
+.logo-3d {
+  color: #4CAF50;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  font-size: 32px;
+  line-height: 1;
+}
+
+.logo-hub {
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  font-size: 32px;
+  line-height: 1;
+}
+
 .catalog-btn {
   background: linear-gradient(135deg, #4CAF50, #388E3C);
   border: none;
@@ -187,44 +213,8 @@ const handleUpload = () => {
   box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
 }
 
-.logo-text {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 32px;
-  color: #fff;
-  text-shadow: 
-    0 0 10px rgba(0, 255, 128, 0.8),
-    0 0 20px rgba(0, 255, 128, 0.6),
-    0 0 30px rgba(0, 255, 128, 0.4);
-  letter-spacing: 4px;
-  font-weight: 700;
-  text-transform: uppercase;
-  background: linear-gradient(135deg, 
-    #fff 0%, 
-    #00ff80 25%,
-    #fff 50%,
-    #00ff80 75%,
-    #fff 100%
-  );
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  position: relative;
-  padding: 0 10px;
-  transform: skew(-5deg);
-  animation: shine 3s linear infinite;
-}
-
 .logo-text::before {
-  content: '3D HUB';
-  position: absolute;
-  left: 10px;
-  top: 2px;
-  z-index: -1;
-  background: linear-gradient(135deg, #00ff80, #00b359);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  opacity: 0.7;
-  animation: glow 2s ease-in-out infinite alternate;
+  content: none;
 }
 
 @keyframes shine {
@@ -238,16 +228,10 @@ const handleUpload = () => {
 
 @keyframes glow {
   from {
-    text-shadow: 
-      0 0 10px rgba(0, 255, 128, 0.8),
-      0 0 20px rgba(0, 255, 128, 0.6),
-      0 0 30px rgba(0, 255, 128, 0.4);
+    text-shadow: none;
   }
   to {
-    text-shadow:
-      0 0 20px rgba(0, 255, 128, 0.8),
-      0 0 30px rgba(0, 255, 128, 0.6),
-      0 0 40px rgba(0, 255, 128, 0.4);
+    text-shadow: none;
   }
 }
 
