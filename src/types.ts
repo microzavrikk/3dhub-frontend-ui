@@ -474,6 +474,13 @@ export type RegisterMutationVariables = Exact<{
 
 export type RegisterMutation = { __typename?: 'Mutation', Auth?: { __typename?: 'AuthMutation', register: { __typename?: 'AuthPayload', accessToken: string, user: { __typename?: 'User', id: string, email: string, username: string, role: string } } } | null };
 
+export type FindAssetsByFilterQueryVariables = Exact<{
+  input: AssetsFilterInput;
+}>;
+
+
+export type FindAssetsByFilterQuery = { __typename?: 'Query', findAssetsByFilter: { __typename?: 'AssetsFilterOutput', totalCount: number, assets: Array<{ __typename?: 'AssetOutput', id: string, file: Array<string>, price: number, awsLocation: string, titleName: string, name: string, description?: string | null, category: string, tags: Array<string>, ownerId: string, publicAccess?: boolean | null, createdAt?: string | null, updatedAt?: string | null }> } };
+
 export type GetDefaultFiltersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -626,6 +633,51 @@ export function useRegisterMutation(options: VueApolloComposable.UseMutationOpti
   return VueApolloComposable.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument, options);
 }
 export type RegisterMutationCompositionFunctionResult = VueApolloComposable.UseMutationReturn<RegisterMutation, RegisterMutationVariables>;
+export const FindAssetsByFilterDocument = gql`
+    query FindAssetsByFilter($input: AssetsFilterInput!) {
+  findAssetsByFilter(input: $input) {
+    assets {
+      id
+      file
+      price
+      awsLocation
+      titleName
+      name
+      description
+      category
+      tags
+      ownerId
+      publicAccess
+      createdAt
+      updatedAt
+    }
+    totalCount
+  }
+}
+    `;
+
+/**
+ * __useFindAssetsByFilterQuery__
+ *
+ * To run a query within a Vue component, call `useFindAssetsByFilterQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFindAssetsByFilterQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useFindAssetsByFilterQuery({
+ *   input: // value for 'input'
+ * });
+ */
+export function useFindAssetsByFilterQuery(variables: FindAssetsByFilterQueryVariables | VueCompositionApi.Ref<FindAssetsByFilterQueryVariables> | ReactiveFunction<FindAssetsByFilterQueryVariables>, options: VueApolloComposable.UseQueryOptions<FindAssetsByFilterQuery, FindAssetsByFilterQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<FindAssetsByFilterQuery, FindAssetsByFilterQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<FindAssetsByFilterQuery, FindAssetsByFilterQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<FindAssetsByFilterQuery, FindAssetsByFilterQueryVariables>(FindAssetsByFilterDocument, variables, options);
+}
+export function useFindAssetsByFilterLazyQuery(variables?: FindAssetsByFilterQueryVariables | VueCompositionApi.Ref<FindAssetsByFilterQueryVariables> | ReactiveFunction<FindAssetsByFilterQueryVariables>, options: VueApolloComposable.UseQueryOptions<FindAssetsByFilterQuery, FindAssetsByFilterQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<FindAssetsByFilterQuery, FindAssetsByFilterQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<FindAssetsByFilterQuery, FindAssetsByFilterQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<FindAssetsByFilterQuery, FindAssetsByFilterQueryVariables>(FindAssetsByFilterDocument, variables, options);
+}
+export type FindAssetsByFilterQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<FindAssetsByFilterQuery, FindAssetsByFilterQueryVariables>;
 export const GetDefaultFiltersDocument = gql`
     query GetDefaultFilters {
   getDefaultFilters {

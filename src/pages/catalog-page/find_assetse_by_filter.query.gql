@@ -1,0 +1,20 @@
+query FindAssetsByFilter($input: AssetsFilterInput!) {
+  findAssetsByFilter(input: $input) {
+    assets {
+      id
+      file
+      price
+      awsLocation
+      titleName
+      name
+      description
+      category
+      tags
+      ownerId
+      publicAccess
+      createdAt
+      updatedAt
+    }
+    totalCount
+  }
+}
