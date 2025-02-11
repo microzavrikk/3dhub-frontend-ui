@@ -42,6 +42,11 @@ export const useModelStore = defineStore('model', {
       this.isLoading = loading;
     },
 
+    async clearAssetsFiles() {
+      this.assetFiles = [];
+      this.assetUrls.clear();
+    },
+
     async setModel(file: File): Promise<void> {
       this.setIsLoading(true);
       this.setLoadingProgress(0);
@@ -122,14 +127,18 @@ export const useModelStore = defineStore('model', {
         URL.revokeObjectURL(this.previewUrl);
       }
       
+      // Clear all object URLs
       this.assetUrls.forEach(url => {
         URL.revokeObjectURL(url);
       });
       
+      // Reset all state
       this.model = null;
       this.previewUrl = null;
       this.assetFiles = [];
       this.assetUrls.clear();
+      
+      console.log(`[Instance ${this.instanceId}] Store cleared, assetFiles length:`, this.assetFiles.length);
       
       this.logStoreState();
     },

@@ -144,7 +144,9 @@ const loadModel = async (file: File) => {
     }
 
     const extension = file.name.split('.').pop()?.toLowerCase();
+    console.log("file name123123: ", file.name)
     const assetFiles = modelStore.getAssetFiles();
+    console.log("file name123123: ", modelStore.getAssetFiles());
     
     if (extension === 'gltf' || extension === 'glb') {
       const loader = new GLTFLoader();
@@ -247,6 +249,7 @@ const loadModel = async (file: File) => {
       
       currentModel.position.sub(center.multiplyScalar(scale));
       scene.add(currentModel);
+      modelStore.clearAssetsFiles();
     }
   } catch (error) {
     console.error('Error loading model:', error);
@@ -261,6 +264,8 @@ onMounted(() => {
   window.addEventListener('resize', handleResize);
 
   console.log("props ALL in 3d-scene", props);
+
+  console.log("modelStore in 3d-scene", modelStore);
   
   if (props.modelFile) {
     loadModel(props.modelFile);
