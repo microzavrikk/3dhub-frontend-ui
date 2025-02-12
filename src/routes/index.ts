@@ -23,8 +23,7 @@ import Profile from '../pages/profile-page/profile.vue'
 import Catalog from '../pages/catalog-page/catalog.vue'
 
 import ViewModelPage from '../pages/view-model-page/view-model-page.vue'
-
-
+import ModelPage from '../pages/model-page/model-page.vue'
 
 
 
@@ -39,13 +38,14 @@ const routes = [
     component: MainPage
 
   },
-
   {
-
+    path: '/model',
+    name: 'ModelPage',
+    component: ModelPage
+  },
+  {
     path: '/catalog-page',
-
     name: 'Catalog',
-
     component: Catalog
 
   },
