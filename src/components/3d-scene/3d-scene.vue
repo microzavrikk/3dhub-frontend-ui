@@ -44,14 +44,45 @@ const isLoading = ref(false);
 const loadingProgress = ref(0);
 
 const createGrid = () => {
-  // Создаем сетку
+  // Создаем основную сетку
   const size = 20;
-  const divisions = 20;
-  const gridHelper = new THREE.GridHelper(size, divisions, 0x444444, 0x444444);
+  const divisions = 40; // Увеличили количество делений для более детальной сетки
+  const gridHelper = new THREE.GridHelper(size, divisions);
+  
+  // Настраиваем цвета сетки
+  const gridMaterial = gridHelper.material as THREE.Material;
+  if (gridMaterial instanceof THREE.LineBasicMaterial) {
+    gridMaterial.opacity = 0.2;
+    gridMaterial.transparent = true;
+  }
+  
+  // Добавляем вторую сетку для эффекта глубины
+  const largeGridHelper = new THREE.GridHelper(size * 2, divisions / 2);
+  if (largeGridHelper.material instanceof THREE.LineBasicMaterial) {
+    largeGridHelper.material.opacity = 0.1;
+    largeGridHelper.material.transparent = true;
+  }
+  
   scene.add(gridHelper);
+  scene.add(largeGridHelper);
 
-  // Создаем оси координат
-  const axesHelper = new THREE.AxesHelper(5);
+  // Создаем оси координат с увеличенным размером и яркостью
+  const axesHelper = new THREE.AxesHelper(7);
+  // Настраиваем цвета осей
+  if (axesHelper.material instanceof THREE.LineBasicMaterial) {
+    const colors = axesHelper.geometry.attributes.color as THREE.BufferAttribute;
+    // X axis - красный
+    colors.setXYZ(0, 1, 0.2, 0.2); // начало
+    colors.setXYZ(1, 1, 0.2, 0.2); // конец
+    // Y axis - зеленый
+    colors.setXYZ(2, 0.2, 1, 0.2); // начало
+    colors.setXYZ(3, 0.2, 1, 0.2); // конец
+    // Z axis - синий
+    colors.setXYZ(4, 0.2, 0.2, 1); // начало
+    colors.setXYZ(5, 0.2, 0.2, 1); // конец
+    
+    colors.needsUpdate = true;
+  }
   scene.add(axesHelper);
 };
 
