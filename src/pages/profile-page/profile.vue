@@ -78,6 +78,50 @@
       </div>
     </div>
 
+    <div class="profile-stats-section">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-4H6v-2h4V7h2v4h4v2h-4v4z"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">128</span>
+          <span class="stat-label">Models Created</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">2.4K</span>
+          <span class="stat-label">Total Likes</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">156</span>
+          <span class="stat-label">Hours Online</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-tabs">
+      <button class="tab-button active">My Models</button>
+      <button class="tab-button">Liked Models</button>
+      <button class="tab-button">Collections</button>
+    </div>
+
     <div class="models-container">
       <div v-if="hasModels" class="models-grid">
         <div v-for="model in filteredModels" :key="model.titleName" class="model-item">
@@ -125,6 +169,35 @@
           <path fill="currentColor" d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"/>
         </svg>
         <p>No models uploaded yet</p>
+      </div>
+    </div>
+
+    <div class="profile-activity">
+      <h3 class="section-title">Recent Activity</h3>
+      <div class="activity-list">
+        <div class="activity-item">
+          <div class="activity-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+          </div>
+          <div class="activity-content">
+            <span class="activity-text">Uploaded new model "Sci-fi Weapon"</span>
+            <span class="activity-time">2 hours ago</span>
+          </div>
+        </div>
+        
+        <div class="activity-item">
+          <div class="activity-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </div>
+          <div class="activity-content">
+            <span class="activity-text">Liked "Fantasy Character"</span>
+            <span class="activity-time">5 hours ago</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -933,5 +1006,146 @@ onUnmounted(() => {
 
 .file-input {
   display: none;
+}
+
+.profile-stats-section {
+  display: flex;
+  justify-content: space-around;
+  padding: 30px 50px;
+  margin-top: 20px;
+  background: #1a1a1a;
+  border-radius: 12px;
+  margin: 20px 50px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: #242424;
+  border-radius: 12px;
+  min-width: 200px;
+}
+
+.stat-icon {
+  padding: 12px;
+  background: #333;
+  border-radius: 12px;
+  color: #4CAF50;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #888;
+}
+
+.profile-tabs {
+  display: flex;
+  gap: 20px;
+  padding: 0 50px;
+  margin: 30px 0;
+}
+
+.tab-button {
+  padding: 12px 24px;
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.tab-button.active {
+  color: #4CAF50;
+  border-bottom-color: #4CAF50;
+}
+
+.profile-activity {
+  padding: 30px 50px;
+  background: #1a1a1a;
+  border-radius: 12px;
+  margin: 20px 50px;
+}
+
+.section-title {
+  font-size: 20px;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: #242424;
+  border-radius: 8px;
+}
+
+.activity-icon {
+  padding: 8px;
+  background: #333;
+  border-radius: 8px;
+  color: #4CAF50;
+}
+
+.activity-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.activity-text {
+  color: #fff;
+  font-size: 14px;
+}
+
+.activity-time {
+  color: #666;
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .profile-stats-section {
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    margin: 20px;
+  }
+
+  .stat-card {
+    width: 100%;
+  }
+
+  .profile-tabs {
+    padding: 0 20px;
+    overflow-x: auto;
+  }
+
+  .profile-activity {
+    margin: 20px;
+    padding: 20px;
+  }
 }
 </style>
