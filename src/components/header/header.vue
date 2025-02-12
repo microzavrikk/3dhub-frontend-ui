@@ -36,13 +36,13 @@
 
     <div class="nav-buttons">
       <template v-if="!isAuthenticated">
-        <button class="nav-btn auth-btn" @click="showLoginModal = true">
+        <button class="nav-btn auth-btn" @click="router.push('/login')">
           <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24">
             <path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
           </svg>
           Sign In
         </button>
-        <button class="nav-btn primary auth-btn" @click="showSignupModal = true">
+        <button class="nav-btn primary auth-btn" @click="router.push('/signup')">
           <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24">
             <path fill="currentColor" d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
           </svg>
@@ -118,8 +118,6 @@ import SearchBar from '../search-bar/search-bar.vue';
 import { UserAuthService } from '../../service/auth/user.auth.service';
 
 const router = useRouter();
-const showLoginModal = ref(false);
-const showSignupModal = ref(false);
 const showProfileMenu = ref(false);
 
 const isAuthenticated = computed(() => UserAuthService.isAuthenticated());
