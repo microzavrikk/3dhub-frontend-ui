@@ -1,5 +1,6 @@
 <template>
-  <div class="model-edit-container">
+      <Header />
+<div class="model-edit-container">
     <div class="content-wrapper">
       <div class="model-preview-section" style="flex: 2;">
         <div class="preview-header-bar">
@@ -293,6 +294,7 @@ import { useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import axios from 'axios';
 import { UserAuthService } from '../../service/auth/user.auth.service';
+import Header from '../../components/header/header.vue';
 
 const user = JSON.parse(UserAuthService.getUser() || '{}');
 

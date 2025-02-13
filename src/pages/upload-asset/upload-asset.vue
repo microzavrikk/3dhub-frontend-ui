@@ -1,87 +1,92 @@
 <template>
-  <div class="upload-container">
+  <div class="upload-page">
     <div class="background-animation"></div>
-    <h2>Upload your 3D creation</h2>
-    <p class="upload-subtitle">Supported formats: GLTF, GLB, OBJ with textures</p>
+    <div class="header-wrapper">
+      <Header />
+    </div>
+    <div class="upload-container">
+      <h2>Upload your 3D creation</h2>
+      <p class="upload-subtitle">Supported formats: GLTF, GLB, OBJ with textures</p>
 
-    <div class="upload-sections">
-      <div
-        class="drop-zone"
-        @dragover.prevent="handleDragOver"
-        @dragleave.prevent="handleDragLeave"
-        @drop.prevent="handleDrop"
-        :class="{ 'drop-zone--active': isDragging }"
-        @click="triggerFileInput"
-      >
-        <input
-          type="file"
-          ref="fileInput"
-          @change="handleFileSelect"
-          class="file-input"
-          accept=".gltf,.glb,.obj,.bin,.png,.jpg,.jpeg"
-          multiple
+      <div class="upload-sections">
+        <div
+          class="drop-zone"
+          @dragover.prevent="handleDragOver"
+          @dragleave.prevent="handleDragLeave"
+          @drop.prevent="handleDrop"
+          :class="{ 'drop-zone--active': isDragging }"
+          @click="triggerFileInput"
         >
+          <input
+            type="file"
+            ref="fileInput"
+            @change="handleFileSelect"
+            class="file-input"
+            accept=".gltf,.glb,.obj,.bin,.png,.jpg,.jpeg"
+            multiple
+          >
 
-        <div class="drop-zone__content">
-          <div v-if="selectedFiles.length" class="files-preview">
-            <div class="files-preview__header">
-              <h3>Selected Files</h3>
-              <span class="files-count">{{ selectedFiles.length }} files</span>
-            </div>
-            <div class="selected-files">
-              <div v-for="file in selectedFiles" :key="file.name" 
-                   :class="['selected-file', { 'selected-file--primary': isMainModel(file) }]">
-                <div class="file-info">
-                  <span class="file-icon" v-html="getFileIcon(file)"></span>
-                  <div class="file-details">
-                    <span class="file-name">{{ file.name }}</span>
-                    <span class="file-size">{{ formatFileSize(file.size) }}</span>
+          <div class="drop-zone__content">
+            <div v-if="selectedFiles.length" class="files-preview">
+              <div class="files-preview__header">
+                <h3>Selected Files</h3>
+                <span class="files-count">{{ selectedFiles.length }} files</span>
+              </div>
+              <div class="selected-files">
+                <div v-for="file in selectedFiles" :key="file.name" 
+                     :class="['selected-file', { 'selected-file--primary': isMainModel(file) }]">
+                  <div class="file-info">
+                    <span class="file-icon" v-html="getFileIcon(file)"></span>
+                    <div class="file-details">
+                      <span class="file-name">{{ file.name }}</span>
+                      <span class="file-size">{{ formatFileSize(file.size) }}</span>
+                    </div>
                   </div>
+                  <button class="remove-btn" @click.stop="removeFile(file)" title="Remove file">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                      <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                  </button>
                 </div>
-                <button class="remove-btn" @click.stop="removeFile(file)" title="Remove file">
-                  <svg width="20" height="20" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                  </svg>
-                </button>
               </div>
             </div>
-          </div>
-          <div v-else class="drop-zone__empty">
-            <div class="upload-icon-wrapper">
-              <svg width="64" height="64" viewBox="0 0 24 24" class="upload-icon">
-                <path fill="currentColor" d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
-              </svg>
-            </div>
-            <h3 class="drop-title">Drag & drop your files here</h3>
-            <p class="drop-subtitle">or click to browse</p>
-            <div class="supported-formats">
-              <span class="format-tag">GLTF</span>
-              <span class="format-tag">GLB</span>
-              <span class="format-tag">OBJ</span>
-              <span class="format-tag">Textures</span>
+            <div v-else class="drop-zone__empty">
+              <div class="upload-icon-wrapper">
+                <svg width="64" height="64" viewBox="0 0 24 24" class="upload-icon">
+                  <path fill="currentColor" d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                </svg>
+              </div>
+              <h3 class="drop-title">Drag & drop your files here</h3>
+              <p class="drop-subtitle">or click to browse</p>
+              <div class="supported-formats">
+                <span class="format-tag">GLTF</span>
+                <span class="format-tag">GLB</span>
+                <span class="format-tag">OBJ</span>
+                <span class="format-tag">Textures</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="actions">
-      <button class="action-btn cancel" @click="handleCancel">
-        <svg width="20" height="20" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-        </svg>
-        Cancel
-      </button>
-      <button
-        v-if="modelFile"
-        class="action-btn upload"
-        @click="handleUpload"
-      >
-        Continue
-        <svg width="20" height="20" viewBox="0 0 24 24">
-          <path fill="currentColor" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
-        </svg>
-      </button>
+      <div class="actions">
+        <button class="action-btn cancel" @click="handleCancel">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+          </svg>
+          Cancel
+        </button>
+        <button
+          v-if="modelFile"
+          class="action-btn upload"
+          @click="handleUpload"
+        >
+          Continue
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -89,9 +94,14 @@
 <script>
 import { useModelStore } from '../../stores/modelStore';
 import { useRouter } from 'vue-router';
+import Header from '../../components/header/header.vue';
+
 
 export default {
   name: 'FileUploader',
+  components: {
+    Header
+  },
 
   setup() {
     const modelStore = useModelStore();
