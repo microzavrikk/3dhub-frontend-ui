@@ -1,5 +1,6 @@
 <template>
   <div class="upload-container">
+    <div class="background-animation"></div>
     <h2>Upload your 3D creation</h2>
     <p class="upload-subtitle">Supported formats: GLTF, GLB, OBJ with textures</p>
 
