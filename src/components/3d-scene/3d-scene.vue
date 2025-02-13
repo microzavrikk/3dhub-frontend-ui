@@ -280,7 +280,6 @@ const loadModel = async (file: File) => {
       
       currentModel.position.sub(center.multiplyScalar(scale));
       scene.add(currentModel);
-      modelStore.clearAssetsFiles();
     }
   } catch (error) {
     console.error('Error loading model:', error);
