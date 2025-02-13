@@ -3,8 +3,10 @@
     <div class="logo-section">
       <div class="logo">
         <h1 class="logo-text">
-          <span class="logo-3d">3D</span>
-          <span class="logo-hub">HUB</span>
+          <router-link to="/" class="logo-link">
+            <span class="logo-3d">3D</span>
+            <span class="logo-hub">HUB</span>
+          </router-link>
         </h1>
       </div>
       
@@ -181,6 +183,13 @@ const handleUpload = () => {
   align-items: center;
   gap: 4px;
   margin: 0;
+}
+
+.logo-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .logo-3d {
