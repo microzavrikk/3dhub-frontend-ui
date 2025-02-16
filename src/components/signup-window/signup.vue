@@ -115,7 +115,9 @@ import { ref, defineEmits } from 'vue';
 import { RegisterForm } from '../common.types'
 import EmailVerificationModal from '../email-verification-modal/email-verification-modal.vue';
 import { useRegisterMutation } from '../../types';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const registerForm = ref<RegisterForm>({
   username: '',
   password: '',

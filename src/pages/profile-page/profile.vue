@@ -139,7 +139,9 @@
           </Suspense>
           <div class="model-info">
             <div class="model-header">
-              <h3 class="model-title">{{ model.titleName }}</h3>
+              <h3 class="model-title">
+                <router-link :to="`/model?titleName=${model.titleName}`" style="text-decoration: none; color: inherit;">{{ model.titleName }}</router-link>
+              </h3>
               <div class="model-stats">
                 <div class="stat-item">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">

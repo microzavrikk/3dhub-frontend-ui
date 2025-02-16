@@ -26,7 +26,7 @@
           </div>
 
           <div class="hero-actions">
-            <router-link to="/catalog" class="btn primary">Explore</router-link>
+            <router-link to="/catalog-page" class="btn primary">Explore</router-link>
             <button class="btn secondary" @click="handleUpload">Create</button>
           </div>
         </div>
