@@ -14,33 +14,56 @@ A modern web platform for sharing, discovering and downloading 3D models. Built 
 
 ## Screenshots
 
-### Main Page
-Modern landing page with featured models and categories
-![Main Page](https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/main-page.png)
+<div align="center">
 
-### Model Catalog
-Browse and filter through the collection of 3D models
-![Catalog](https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/catalog.png)
+### 🏠 Main Page
+*Modern landing page with featured models and categories*
 
-### Model View
-Interactive 3D preview with model information and download options
-![View Model](https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/view_model.png)
+<img src="https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/main-page.png" width="800px"/>
 
-### Model Loading
-Smooth loading transitions with progress indicators
-![Load Model](https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/load_model.png)
+---
 
-### Model Information
-Detailed model information with metadata and creator details
-![Model Info](https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/load_model_info.png)
+### 📚 Model Catalog
+*Browse and filter through the collection of 3D models*
 
-### Search Interface
-Powerful search functionality with real-time filtering
-![Search](https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/search.png)
+<img src="https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/catalog.png" width="800px"/>
 
-### User Profile
-Personalized user profiles with uploaded models and statistics
-![Profile](https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/profile_screen.png)
+---
+
+### 🎮 Model View
+*Interactive 3D preview with model information and download options*
+
+<img src="https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/view_model.png" width="800px"/>
+
+---
+
+### ⚡ Model Loading
+*Smooth loading transitions with progress indicators*
+
+<img src="https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/load_model.png" width="800px"/>
+
+---
+
+### ℹ️ Model Information
+*Detailed model information with metadata and creator details*
+
+<img src="https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/load_model_info.png" width="800px"/>
+
+---
+
+### 🔍 Search Interface
+*Powerful search functionality with real-time filtering*
+
+<img src="https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/search.png" width="800px"/>
+
+---
+
+### 👤 User Profile
+*Personalized user profiles with uploaded models and statistics*
+
+<img src="https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/profile_screen.png" width="800px"/>
+
+</div>
 
 ## Tech Stack
 
@@ -51,7 +74,3 @@ Personalized user profiles with uploaded models and statistics
 - Vite
 - CSS3
 - HTML5
-
-## Getting Started
-
-1. Clone the repository:
