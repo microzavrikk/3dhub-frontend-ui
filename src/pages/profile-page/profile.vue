@@ -290,7 +290,6 @@ const loadModelFiles = async (model: any) => {
     const gltfBlob = await gltfResponse.blob();
     console.log(`GLTF file ${gltfFile.name} size:`, gltfBlob.size);
     const gltfModelFile = new File([gltfBlob], gltfFile.name, { 
-      type: 'model/gltf+json'
     });
 
     // Load .bin file
