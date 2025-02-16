@@ -94,55 +94,85 @@
     gap: 8px;
   }
   
-  .price-inputs {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.03);
+  .price-filter {
+    background: rgba(30, 30, 30, 0.6);
     border-radius: 16px;
-    transition: all 0.3s ease;
+    padding: 24px;
+    border: 1px solid rgba(76, 175, 80, 0.1);
+  }
+  
+  .price-range-container {
+    background: rgba(20, 20, 20, 0.6);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 80%;
+  }
+  
+  .price-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 80%;
+  }
+  
+  .price-input-group label {
+    color: #999;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
   
   .price-input-wrapper {
     position: relative;
-    flex: 1;
+    width: 100%;
+  }
+  
+  .currency-symbol {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4CAF50;
+    font-weight: 600;
+    font-size: 15px;
+    pointer-events: none;
   }
   
   .price-input {
-    width: 100%;
+    width: 80%;
+    background: rgba(40, 40, 40, 0.8);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+    border-radius: 89;
     padding: 14px;
-    padding-left: 28px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(76, 175, 80, 0.3);
-    border-radius: 12px;
+    padding-left: 36px;
     color: #fff;
     font-size: 15px;
     font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    outline: none;
+    transition: all 0.3s ease;
+    max-width: 150px;
   }
   
-  .currency {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: rgba(255, 255, 255, 0.5);
-    font-weight: 500;
+  .price-input:hover {
+    border-color: rgba(76, 175, 80, 0.4);
+    background: rgba(40, 40, 40, 0.9);
   }
   
-  .price-input:hover,
   .price-input:focus {
-    background: rgba(255, 255, 255, 0.08);
+    outline: none;
     border-color: #4CAF50;
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    background: rgba(40, 40, 40, 1);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
   }
   
-  .price-separator {
-    color: rgba(255, 255, 255, 0.5);
-    font-weight: 600;
-    font-size: 16px;
+  .price-range-divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(76, 175, 80, 0.2);
+    margin: 4px 0;
   }
   
   .filter-option {
@@ -300,25 +330,24 @@
   }
   
   .model-card {
-    background: rgba(26, 26, 30, 0.8);
-    border-radius: 24px;
+    background: rgba(30, 30, 30, 0.6);
+    border-radius: 16px;
     overflow: hidden;
-    border: 1px solid rgba(76, 175, 80, 0.2);
+    border: 1px solid rgba(76, 175, 80, 0.1);
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
   }
   
   .model-card:hover {
-    transform: translateY(-12px);
-    border-color: #4CAF50;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transform: translateY(-4px);
+    border-color: rgba(76, 175, 80, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   }
   
   .model-preview {
-    height: 300px;
-    background: #1a1a1a;
     position: relative;
+    height: 220px;
+    background: rgba(20, 20, 20, 0.8);
     overflow: hidden;
   }
   
@@ -359,59 +388,98 @@
   }
   
   .model-info {
-    padding: 24px;
-    background: linear-gradient(180deg, rgba(26, 26, 30, 0.95) 0%, rgba(26, 26, 30, 0.98) 100%);
+    padding: 20px;
   }
   
-  .model-header {
-    margin-bottom: 16px;
-  }
-  
-  .model-info h3 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: #fff;
+  .model-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 18px;
     font-weight: 600;
-    margin-bottom: 8px;
+    margin: 0;
+    color: #fff;
+  }
+  
+  .model-header h3 svg {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    color: #4CAF50;
+  }
+  
+  .model-header h3 span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 24px;
   }
   
   .model-author {
     color: #4CAF50;
-    font-size: 1rem;
-    margin: 0;
+    font-size: 14px;
     font-weight: 500;
+    margin-bottom: 16px;
   }
   
   .model-tags {
     display: flex;
-    gap: 8px;
-    margin: 16px 0;
     flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
   }
   
   .model-tag {
-    padding: 6px 12px;
     background: rgba(76, 175, 80, 0.1);
-    border-radius: 10px;
-    font-size: 13px;
     color: #4CAF50;
-    border: 1px solid rgba(76, 175, 80, 0.3);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid rgba(76, 175, 80, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .model-tag:hover {
+    background: rgba(76, 175, 80, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  .no-tags {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #666;
+    font-size: 13px;
     font-weight: 500;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .no-tags svg {
+    color: #666;
   }
   
   .model-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 20px;
     padding-top: 16px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 16px;
   }
   
   .model-price {
+    font-size: 20px;
     font-weight: 700;
     color: #4CAF50;
-    font-size: 1.4rem;
+  }
+  
+  .model-actions {
+    display: flex;
+    gap: 12px;
   }
   
   .download-btn {
@@ -550,4 +618,26 @@
     100% {
       transform: rotate(360deg);
     }
+  }
+
+  .comment-input-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .comment-input {
+    width: 100%;
+    background: rgba(20, 20, 20, 0.6);
+    border: 1px solid rgba(76, 175, 80, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    color: white;
+    resize: vertical;
+    min-height: 24px;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s ease;
   }
