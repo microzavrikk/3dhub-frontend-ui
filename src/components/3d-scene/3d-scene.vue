@@ -27,9 +27,15 @@ const props = defineProps({
   height: {
     type: String, 
     default: '800px'
+  },
+  zoomLevel: {
+    type: Number,
+    required: false,
+    default: 5
   }
 });
 
+//@ts-ignore
 const container = ref<HTMLDivElement | null>(null);
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
@@ -95,9 +101,9 @@ const init = () => {
   const width = container.value.clientWidth;
   const height = container.value.clientHeight;
   camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-  camera.position.z = 5;
-  camera.position.y = 2;
-  camera.position.x = 2;
+  camera.position.z = props.zoomLevel;
+  camera.position.y = props.zoomLevel / 2.5;
+  camera.position.x = props.zoomLevel / 2.5;
 
   renderer = new THREE.WebGLRenderer({ 
     antialias: true,
