@@ -4,61 +4,61 @@ A modern web platform for sharing, discovering and downloading 3D models. Built 
 
 ## Features
 
-- 🎨 Modern and intuitive UI design
-- 🔍 Advanced search and filtering system
-- 📱 Responsive layout for all devices
-- 🎮 Interactive 3D model preview
-- 👤 User profiles and model management
-- ⚡ Fast and smooth performance
-- 🌙 Dark theme optimized
+- Modern and intuitive UI design
+- Advanced search and filtering system
+- Responsive layout for all devices
+- Interactive 3D model preview
+- User profiles and model management
+- Fast and smooth performance
+- Dark theme optimized
 
 ## Screenshots
 
 <div align="center">
 
-### 🏠 Main Page
+### Main Page
 *Modern landing page with featured models and categories*
 
 <img src="https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/main-page.png" width="800px"/>
 
----
+<br/>
 
-### 📚 Model Catalog
+### Model Catalog
 *Browse and filter through the collection of 3D models*
 
 <img src="https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/catalog.png" width="800px"/>
 
----
+<br/>
 
-### 🎮 Model View
+### Model View
 *Interactive 3D preview with model information and download options*
 
 <img src="https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/view_model.png" width="800px"/>
 
----
+<br/>
 
-### ⚡ Model Loading
+### Model Loading
 *Smooth loading transitions with progress indicators*
 
 <img src="https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/load_model.png" width="800px"/>
 
----
+<br/>
 
-### ℹ️ Model Information
+### Model Information
 *Detailed model information with metadata and creator details*
 
 <img src="https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/load_model_info.png" width="800px"/>
 
----
+<br/>
 
-### 🔍 Search Interface
+### Search Interface
 *Powerful search functionality with real-time filtering*
 
 <img src="https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/search.png" width="800px"/>
 
----
+<br/>
 
-### 👤 User Profile
+### User Profile
 *Personalized user profiles with uploaded models and statistics*
 
 <img src="https://github.com/microzavrikk/3dhub-frontend-ui/blob/main/3dhub_screenshots/screenshots/profile_screen.png" width="800px"/>
